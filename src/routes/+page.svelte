@@ -55,7 +55,7 @@
 	}
 	setInterval(() => {
 		getTimeRemaining();
-	}, 1000);
+	}, 2000);
 </script>
 
 <p>
