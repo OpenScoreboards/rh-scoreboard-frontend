@@ -36,15 +36,15 @@
 			})
 			.then((data) => {
 				api_data = JSON.stringify(data);
-				let time = data['game_clock']['last_time_remaining']['secs'];
+				let time = data['game_clock']['last_time_remaining'];
 				if (data['game_clock']['state'] === 'Running') {
 					let now = new Date().getTime();
 					let last_state_change = data['game_clock']['last_state_change'];
-					let timeSinceStateChange = Math.floor((now - last_state_change) / 1000);
+					let timeSinceStateChange = Math.floor(now - last_state_change);
 					time -= timeSinceStateChange;
 				}
 				let timeRemaining = time;
-				clock = `${pad(Math.floor(timeRemaining / 60), 2)}:${pad(timeRemaining % 60, 2)}`;
+				clock = `${pad(Math.floor(timeRemaining / 60_000), 2)}:${pad(Math.floor(timeRemaining / 1000) % 60, 2)}:${pad(timeRemaining % 1000, 3)}`;
 
 				home_score = data['home_score'];
 				away_score = data['away_score'];
@@ -52,15 +52,6 @@
 			.catch((error) => {
 				console.error('Error:', error);
 			});
-
-		// let response = fetch('http://localhost:8000/data', {
-		// 	mode: 'no-cors'
-		// });
-		// console.log(response);
-		// timer = response['home_score'];
-		// timer++;
-		// let json = await response.json();
-		// timer = json['home_score'] as number;
 	}
 	setInterval(() => {
 		getTimeRemaining();
