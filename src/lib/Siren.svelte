@@ -3,10 +3,7 @@
 	import type { Writable } from 'svelte/store';
 
 	export let frequencies: number[] = [480, 560];
-	export let frequencyLower = 480;
-	export let frequencyUpper = 560;
 	let gainNode: GainNode | null = null;
-	let oscillator: OscillatorNode | null = null;
 
 	const audioStore: Writable<AudioContext | null> = getContext('audio');
 	let audio: AudioContext | null = null;
@@ -22,13 +19,6 @@
 		console.log('Siren connected.');
 	}
 	$: connectAudio($audioStore);
-
-	function setFrequency(oscillator: OscillatorNode | null, frequency: number) {
-		if (oscillator === null) return;
-		oscillator.frequency.value = frequency;
-	}
-
-	$: setFrequency(oscillator, frequencyUpper);
 
 	export function beep(durationMs: number) {
 		if (audio === null || gainNode === null) return;
