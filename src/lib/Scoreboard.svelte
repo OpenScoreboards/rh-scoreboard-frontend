@@ -118,6 +118,11 @@
 </main>
 
 <style>
+	@keyframes blinker {
+		50% {
+			opacity: 0.33;
+		}
+	}
 	.scoreboard {
 		position: relative;
 		background-color: black;
@@ -155,7 +160,7 @@
 	}
 	.fouls {
 		container-type: size;
-		height: 44cqh;
+		height: 48cqh;
 		color: red;
 	}
 	.tower {
@@ -169,6 +174,7 @@
 		line-height: 1em;
 		border-radius: 2cqh;
 		color: white;
+		animation: blinker 1s ease-in-out infinite;
 	}
 	.tower .foul {
 		background: red;
