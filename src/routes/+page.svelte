@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Scoreboard from '$lib/Scoreboard.svelte';
 
 	let clock: string = '00:00';
 	let home_score: string = '';
 	let away_score: string = '';
+	let api_data = {};
 	let api_data_string: string = '';
-    let exampleSocket: WebSocket;
+	let exampleSocket: WebSocket;
 	// let api_data: JSON = JSON.parse('{}');
 
 	function pad(num: number, size: number): string {
@@ -26,7 +28,7 @@
 		fetch(`http://${location.hostname}:8000/clock/gameclock/stop`, { method: 'post' });
 	}
 	function setClock() {
-		fetch(`http://${location.hostname}:8000/clock/gameclock/set?value=10000`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/clock/gameclock/set?value=1500`, { method: 'post' });
 	}
 
 	function getTimeRemaining() {
@@ -39,7 +41,7 @@
 			})
 			.then((data) => {
 				api_data_string = JSON.stringify(data);
-				console.log(data);
+				// console.log(data);
 				let time = data['game_clock']['last_time_remaining'];
 				if (data['game_clock']['state'] === 'Running') {
 					let now = new Date().getTime();
@@ -57,12 +59,12 @@
 				away_score = data['away_score'];
 			})
 			.catch((error) => {
-				console.error('Error:', error);
+				// console.error('Error:', error);
 			});
 	}
 
 	function updateClock(api_data: any) {
-		console.log(api_data['game_clock']);
+		// console.log(api_data['game_clock']);
 		if (api_data['game_clock'] === undefined) {
 			return;
 		}
@@ -86,19 +88,19 @@
 
 	onMount(() => {
 		const backendUrl = location.hostname + ':8000';
-		console.log(backendUrl);
+		// console.log(backendUrl);
 		exampleSocket = new WebSocket(`http://${backendUrl}/data_stream`);
 		exampleSocket.onmessage = (event) => {
 			api_data_string = event.data;
-			let api_data = JSON.parse(api_data_string);
-			console.log(api_data_string);
+			api_data = JSON.parse(api_data_string);
+			// console.log(api_data_string);
 			home_score = api_data['home_score'].toString();
 			away_score = api_data['away_score'].toString();
 			updateClock(api_data);
 		};
-        exampleSocket.onerror = (ev) => {
-            console.log(ev);
-        }
+		exampleSocket.onerror = (ev) => {
+			// console.log(ev);
+		};
 
 		// while (exampleSocket.readyState != WebSocket.OPEN) {}
 		// exampleSocket.send('asdf');
@@ -121,4 +123,32 @@
 <button on:click={setClock}>set</button>
 <button on:click={startClock}>start</button>
 <button on:click={stopClock}>stop</button>
-<button on:click={() => {console.log(exampleSocket)}}>stop</button>
+<button
+	on:click={() => {
+		console.log(exampleSocket);
+	}}>stop</button
+>
+
+<div>
+
+<Scoreboard />
+</div>
+
+<style>
+	:global(body) {
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		background-color: gray;
+		color: white;
+	}
+	div {
+		margin: 0;
+		position:absolute;
+		bottom: 0.1vh;
+		height: 59.8vh;
+		left: 0.1vw;
+		width: 99.8vw;
+		filter: opacity(0.9);
+	}
+</style>
