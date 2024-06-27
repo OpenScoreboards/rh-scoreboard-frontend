@@ -68,7 +68,7 @@
 	function connect() {
 		const backendUrl = location.hostname + ':8000';
 		console.log(backendUrl);
-		let socket = new WebSocket(`http://${backendUrl}/data_stream`);
+		let socket = new WebSocket(`ws://${backendUrl}/data_stream`);
 		stateStore.set('warn');
 		socket.onmessage = (event) => {
 			stateStore.set('good');
