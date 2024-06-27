@@ -131,8 +131,8 @@
 		<div class="score">
 			<div class="numbers">{data?.home_score}</div>
 			<Controls>
-				<Control key="w" handler={homeScoreInc}>+</Control>
 				<Control key="s" handler={homeScoreDec}>-</Control>
+				<Control key="w" handler={homeScoreInc}>+</Control>
 			</Controls>
 		</div>
 		<div class="fouls">
@@ -158,8 +158,8 @@
 		<div class="score">
 			<div class="numbers">{data?.away_score}</div>
 			<Controls>
-				<Control key="ArrowUp" desc="↑" handler={awayScoreInc}>+</Control>
 				<Control key="ArrowDown" desc="↓" handler={awayScoreDec}>-</Control>
+				<Control key="ArrowUp" desc="↑" handler={awayScoreInc}>+</Control>
 			</Controls>
 		</div>
 		<div class="fouls">
@@ -340,7 +340,7 @@
 	.fouls {
 		container-type: size;
 		height: 48cqh;
-		color: red;
+		color: yellow;
 	}
 	.tower {
 		height: 44cqh;
@@ -389,7 +389,7 @@
 		border: solid #222 1cqh;
 		border-radius: 2cqh;
 		container-type: size;
-		color: yellow;
+		color: red;
 	}
 	.numbers {
 		vertical-align: middle;

@@ -1,15 +1,40 @@
 <script lang="ts">
 	import { getContext, onMount, tick } from 'svelte';
 	import Siren from './Siren.svelte';
-	import type { Writable } from 'svelte/store';
 	import Control from './Control.svelte';
 	import Controls from './Controls.svelte';
+	// import { minuteMs, secondMs } from './types';
 
+	// export let formats: string[] = ['1:00', '10', '0.0'];
 	export let data: any | undefined;
 	export let endpoint: string = 'gameclock';
 	export let sirenMs: number = 1000;
 	export let toggleKey = '';
 
+	interface Format {
+		ms: number;
+		format: {(ms: number): string};
+	}
+
+	// $: formatters = formats.map((fmt) => {
+	// 	let ms = 0; // value shown in fmt.  Eg: '1:00' (1 hour) -> 3,600,000 ms
+	// 	const vals = fmt.split(':').map(Number.parseFloat);
+	// 	const digits_pre = fmt.split(':').map((val)=>val.split('.')[0].length);
+	// 	const digits_pre = fmt.split(':').map((val)=>val.split('.')[0].length);
+	// 	const multipliers = [60 * minuteMs, minuteMs, secondMs].slice(3 - vals.length);
+	// 	for(const [i, val] of vals.entries()) {
+	// 		const multiplier = multipliers.shift();
+	// 		if(typeof multiplier == 'undefined') throw(`Invalid format: ${fmt}`)
+	// 		const len = lens.shift();
+	// 		ms += val * multiplier;
+	// 	}
+	// 	if(vals.length == 1) {
+
+	// 	} else if (vals.length == 2) {
+
+	// 	}
+	// 	return 
+	// })
 	let now = new Date();
 	let ms = now.getTime();
 
@@ -42,12 +67,16 @@
 			disp_mins = Math.floor(clock_mins);
 			disp =
 				clock_secs > 10
-					? `${disp_mins}:${(disp_secs + '').padStart(2, '0')}`
+					? (
+						disp_mins > 0
+						? `${disp_mins}:${(disp_secs + '').padStart(2, '0')}`
+						: `${(disp_secs + '').padStart(2, '0')}`
+					)
 					: `${(disp_secs + '').padStart(2, '')}.${(Math.floor(disp_mils / 100) + '').padStart(1, '0')}`;
 
 			if (prev_ms > 0 && remaining_ms == 0 && prev_running) {
 				siren.beep(sirenMs);
-				console.table({ prev_ms, remaining_ms });
+				// console.table({ prev_ms, remaining_ms, prev_running });
 			}
 			prev_ms = remaining_ms;
 			prev_running = running;
