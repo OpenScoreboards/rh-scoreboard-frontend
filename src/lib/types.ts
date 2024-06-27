@@ -1,5 +1,8 @@
 export type connectionStateType = 'idle' | 'good' | 'warn' | 'fail';
 
+export const secondMs = 1000;
+export const minuteMs = 60000;
+
 export interface ClockInterface {
     last_state_change: number;
     last_time_remaining: number;

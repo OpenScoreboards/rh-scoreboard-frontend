@@ -22,6 +22,7 @@
 	let disp_mils = 0;
 	let disp = '0:00';
 	let running = false;
+	let prev_running = false;
 
 	let siren: Siren;
 
@@ -40,15 +41,16 @@
 			disp_secs = Math.floor(clock_secs) % 60;
 			disp_mins = Math.floor(clock_mins);
 			disp =
-				disp_mins > 0
+				clock_secs > 10
 					? `${disp_mins}:${(disp_secs + '').padStart(2, '0')}`
 					: `${(disp_secs + '').padStart(2, '')}.${(Math.floor(disp_mils / 100) + '').padStart(1, '0')}`;
 
-			if (prev_ms > 0 && remaining_ms == 0) {
+			if (prev_ms > 0 && remaining_ms == 0 && prev_running) {
 				siren.beep(sirenMs);
 				console.table({ prev_ms, remaining_ms });
 			}
 			prev_ms = remaining_ms;
+			prev_running = running;
 			await tick();
 		}, 10);
 

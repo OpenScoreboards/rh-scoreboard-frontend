@@ -4,26 +4,32 @@
 		position: absolute;
 		display: flex;
 		bottom: 1cqh;
-		height: 15cqh;
+		height: auto;
 		width: 96cqw;
 		padding: 0;
 		margin: 0;
-        align-items: center;
+        align-items:end;
         justify-content: center;
+		/* align-content: flex-end; */
+	}
+	div > :global(div) {
+		display: flex;
+		flex-direction: column;
 	}
 	div :global(button) {
-		/* flex: 1; */
 		color: white;
 		background: transparent;
 		border: solid 1px white;
 		border-radius: 4px;
-		filter: opacity(0.1);
 		cursor: pointer;
-		font-size: 10cqh;
+		font-size: 1.7vh;
         margin: 0.3ex;
+		transition: opacity 0.2s;
+		opacity: 0.1;
 	}
 	div :global(button):hover {
-		filter: none;
+		transition: opacity 0.2s;
+		opacity: 1;
 	}
 </style>
 

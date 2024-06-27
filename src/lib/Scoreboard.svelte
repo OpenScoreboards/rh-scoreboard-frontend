@@ -2,7 +2,7 @@
 	import { setContext, onMount } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import Clock from '$lib/Clock.svelte';
-	import { type connectionStateType } from './types';
+	import { minuteMs, secondMs, type connectionStateType } from './types';
 	import ConnectionStatus from './ConnectionStatus.svelte';
 	import Controls from './Controls.svelte';
 	import Control from './Control.svelte';
@@ -36,11 +36,15 @@
 	function awayFoulDec() {
 		fetch(`http://${location.hostname}:8000/counter/away/teamfouls/decrement`, { method: 'post' });
 	}
-	function gameClockMinutes(minutes: number) {
-		fetch(`http://${location.hostname}:8000/clock/gameclock/set?value=${minutes * 60000}`, { method: 'post' });
+	function setGameClock(ms: number) {
+		fetch(`http://${location.hostname}:8000/clock/gameclock/set?value=${ms}`, {
+			method: 'post'
+		});
 	}
 	function shotClockSeconds(seconds: number) {
-		fetch(`http://${location.hostname}:8000/clock/shotclock/set?value=${seconds * 1000}`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/clock/shotclock/set?value=${seconds * 1000}`, {
+			method: 'post'
+		});
 	}
 	// context stores
 	const dataStore: Writable<Object | null> = writable(null);
@@ -188,42 +192,99 @@
 				>
 					Horn
 				</Control>
-				<Control handler={()=> {
-					gameClockMinutes(25);
-				}}>
-					25:00
-				</Control>
-				<Control handler={()=> {
-					gameClockMinutes(20);
-				}}>
-					20:00
-				</Control>
-				<Control handler={()=> {
-					gameClockMinutes(15);
-				}}>
-					15:00
-				</Control>
-				<Control handler={()=> {
-					gameClockMinutes(10);
-				}}>
-					10:00
-				</Control>
-				<Control handler={()=> {
-					gameClockMinutes(5);
-				}}>
-					5:00
-				</Control>
+				<div>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(25 * minuteMs);
+						}}
+					>
+						25m
+					</Control>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(20 * minuteMs);
+						}}
+					>
+						20m
+					</Control>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(0);
+						}}
+					>
+						0m
+					</Control>
+				</div>
+				<div>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(data?.game_clock.last_time_remaining + minuteMs);
+						}}
+					>
+						+1m
+					</Control>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(data?.game_clock.last_time_remaining - minuteMs);
+						}}
+					>
+						-1m
+					</Control>
+				</div>
+				<div>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(data?.game_clock.last_time_remaining + 10 * secondMs);
+						}}
+					>
+						+10s
+					</Control>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(data?.game_clock.last_time_remaining - 10 * secondMs);
+						}}
+					>
+						-10s
+					</Control>
+				</div>
+				<div>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(data?.game_clock.last_time_remaining + secondMs);
+						}}
+					>
+						+1s
+					</Control>
+					<Control
+						handler={() => {
+							if (data?.game_clock.state == 'Running') return;
+							setGameClock(data?.game_clock.last_time_remaining - secondMs);
+						}}
+					>
+						-1s
+					</Control>
+				</div>
 			</Clock>
 		</div>
 	</div>
 	<div class="shot_clock">
 		<div class="numbers">
 			<Clock data={data?.shot_clock} endpoint="shotclock" toggleKey=",">
-
-				<Control key="." handler={()=> {
-					shotClockSeconds(45);
-				}}>
-					45
+				<Control
+					key="."
+					handler={() => {
+						shotClockSeconds(45);
+					}}
+				>
+					45s
 				</Control>
 			</Clock>
 		</div>
