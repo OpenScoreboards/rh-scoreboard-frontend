@@ -9,8 +9,7 @@
 	let audio: AudioContext | null = null;
 
 	function connectAudio(newAudio: AudioContext | null) {
-		if (newAudio === null) return;
-		if (gainNode !== null) return;
+		if (newAudio === null || gainNode !== null) return;
 		audio = newAudio;
 		gainNode = newAudio.createGain();
 		gainNode.gain.value = 0; // no volume
@@ -23,15 +22,14 @@
 	export function beep(durationMs: number) {
 		if (audio === null || gainNode === null) return;
 		let oscillators: OscillatorNode[] = [];
-		frequencies.forEach((frequency: number) => {
-			if (audio === null || gainNode === null) return;
+		for (const frequency of frequencies) {
 			let oscillator = audio.createOscillator();
 			oscillators.push(oscillator);
 			oscillator.type = 'square';
 			oscillator.frequency.value = frequency;
 			oscillator.connect(gainNode);
 			oscillator.start();
-		});
+		}
 		gainNode.gain.setValueAtTime(0, audio.currentTime);
 		gainNode.gain.linearRampToValueAtTime(1, audio.currentTime + 0.01);
 		console.log('BEEP!');
@@ -39,10 +37,9 @@
 		setTimeout(() => {
 			if (audio === null || gainNode === null) return;
 			gainNode.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 1);
-			oscillators.forEach((oscillator) => {
-				if (audio === null) return;
+			for (const oscillator of oscillators) {
 				oscillator.stop(audio.currentTime + 1);
-			});
+			}
 			console.log('silent...');
 		}, durationMs);
 	}
