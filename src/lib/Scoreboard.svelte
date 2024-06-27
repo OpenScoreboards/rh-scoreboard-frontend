@@ -53,7 +53,30 @@
 	}
 
 	$: console.table({ data });
+
+	const hotkeys: Map<string | number, { (): void }> = new Map();
+	function hotkeyAdd(key: string | number, handler: { (): void }) {
+		hotkeys.set(key, handler);
+	}
+	setContext('hotkeyAdd', hotkeyAdd);
+
+	let focused = false;
+	function keydown(ev: KeyboardEvent) {
+		if (focused) return;
+		for (const key of [ev.key, ev.code]) {
+			const handler = hotkeys.get(key);
+			if (typeof handler !== 'undefined') {
+				ev.preventDefault();
+				return handler();
+			}
+		}
+	}
+	function focus(ev: FocusEvent) {
+		focused = document.activeElement?.tagName == 'input';
+	}
 </script>
+
+<svelte:window on:keydown={keydown} on:focus={focus} />
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <svelte:document class="scoreboard" on:click={resumeAudio} on:keypress={resumeAudio} />
