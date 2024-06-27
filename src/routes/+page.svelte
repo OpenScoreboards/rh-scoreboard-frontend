@@ -145,10 +145,10 @@
 	div {
 		margin: 0;
 		position:absolute;
-		bottom: 0.1vh;
-		height: calc(100vh - 13em);
-		left: 0.1vw;
-		width: 99.8vw;
-		filter: opacity(0.9);
+		bottom: 0.05vh;
+		height: 99.9vh;
+		left: 0.05vw;
+		width: 99.9vw;
+		filter: opacity(1.0);
 	}
 </style>
