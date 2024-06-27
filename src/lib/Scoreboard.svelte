@@ -11,28 +11,28 @@
 	let data: GameJSON | null = null;
 
 	function homeScoreInc() {
-		fetch(`http://${location.hostname}:8000/home/teamcomponent/counter`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/counter/home/score/increment`, { method: 'post' });
 	}
 	function homeScoreDec() {
-		fetch(`http://${location.hostname}:8000/home/teamcomponent/counter`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/counter/home/score/decrement`, { method: 'post' });
 	}
 	function homeFoulInc() {
-		fetch(`http://${location.hostname}:8000/home/teamcomponent/counter`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/counter/home/teamfouls/increment`, { method: 'post' });
 	}
 	function homeFoulDec() {
-		fetch(`http://${location.hostname}:8000/home/teamcomponent/counter`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/counter/home/teamfouls/decrement`, { method: 'post' });
 	}
 	function awayScoreInc() {
-		fetch(`http://${location.hostname}:8000/away/teamcomponent/counter`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/counter/away/score/increment`, { method: 'post' });
 	}
 	function awayScoreDec() {
-		fetch(`http://${location.hostname}:8000/away/teamcomponent/counter`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/counter/away/score/decrement`, { method: 'post' });
 	}
 	function awayFoulInc() {
-		fetch(`http://${location.hostname}:8000/away/teamcomponent/counter`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/counter/away/teamfouls/increment`, { method: 'post' });
 	}
 	function awayFoulDec() {
-		fetch(`http://${location.hostname}:8000/away/teamcomponent/counter`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/counter/away/teamfouls/decrement`, { method: 'post' });
 	}
 	// context stores
 	const dataStore: Writable<Object | null> = writable(null);
