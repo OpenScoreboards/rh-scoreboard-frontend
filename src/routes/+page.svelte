@@ -146,7 +146,7 @@
 		margin: 0;
 		position:absolute;
 		bottom: 0.1vh;
-		height: 59.8vh;
+		height: calc(100vh - 13em);
 		left: 0.1vw;
 		width: 99.8vw;
 		filter: opacity(0.9);
