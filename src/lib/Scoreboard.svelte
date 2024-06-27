@@ -36,6 +36,12 @@
 	function awayFoulDec() {
 		fetch(`http://${location.hostname}:8000/counter/away/teamfouls/decrement`, { method: 'post' });
 	}
+	function gameClockMinutes(minutes: number) {
+		fetch(`http://${location.hostname}:8000/clock/gameclock/set?value=${minutes * 60000}`, { method: 'post' });
+	}
+	function shotClockSeconds(seconds: number) {
+		fetch(`http://${location.hostname}:8000/clock/shotclock/set?value=${seconds * 1000}`, { method: 'post' });
+	}
 	// context stores
 	const dataStore: Writable<Object | null> = writable(null);
 	setContext('data', dataStore);
@@ -182,12 +188,44 @@
 				>
 					Horn
 				</Control>
+				<Control handler={()=> {
+					gameClockMinutes(25);
+				}}>
+					25:00
+				</Control>
+				<Control handler={()=> {
+					gameClockMinutes(20);
+				}}>
+					20:00
+				</Control>
+				<Control handler={()=> {
+					gameClockMinutes(15);
+				}}>
+					15:00
+				</Control>
+				<Control handler={()=> {
+					gameClockMinutes(10);
+				}}>
+					10:00
+				</Control>
+				<Control handler={()=> {
+					gameClockMinutes(5);
+				}}>
+					5:00
+				</Control>
 			</Clock>
 		</div>
 	</div>
 	<div class="shot_clock">
 		<div class="numbers">
-			<Clock data={data?.shot_clock} toggleKey="." />
+			<Clock data={data?.shot_clock} toggleKey=",">
+
+				<Control key="." handler={()=> {
+					shotClockSeconds(45);
+				}}>
+					45
+				</Control>
+			</Clock>
 		</div>
 	</div>
 	<div class="status">

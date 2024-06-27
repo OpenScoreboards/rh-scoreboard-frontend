@@ -64,8 +64,8 @@
 
 	$: update(data);
 
-	function clockStart() {
-		fetch(`http://${location.hostname}:8000/clock/gameclock/start`, { method: 'post' });
+	function clockToggle() {
+		fetch(`http://${location.hostname}:8000/clock/gameclock/${running ? 'stop' : 'start'}`, { method: 'post' });
 	}
 </script>
 
@@ -73,6 +73,6 @@
 <Siren bind:this={siren} />
 {disp}
 <Controls>
-	<Control key={toggleKey} handler={clockStart}>{running ? 'Stop' : 'Start'}</Control>
+	<Control key={toggleKey} handler={clockToggle}>{running ? 'Stop' : 'Start'}</Control>
 	<slot />
 </Controls>
