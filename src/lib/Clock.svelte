@@ -7,7 +7,7 @@
 
 	export let data: any | undefined;
 	export let sirenMs: number = 1000;
-	export let toggleKey = "";
+	export let toggleKey = '';
 
 	let now = new Date();
 	let ms = now.getTime();
@@ -73,6 +73,6 @@
 <Siren bind:this={siren} />
 {disp}
 <Controls>
-	<Control key={toggleKey} handler={clockStart}>Start</Control>
+	<Control key={toggleKey} handler={clockStart}>{running ? 'Stop' : 'Start'}</Control>
+	<slot />
 </Controls>
-

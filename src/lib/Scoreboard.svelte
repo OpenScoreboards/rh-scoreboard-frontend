@@ -7,8 +7,10 @@
 	import Controls from './Controls.svelte';
 	import Control from './Control.svelte';
 	import type { GameJSON } from './backends/rh_scoreboard_backend';
+	import Siren from './Siren.svelte';
 
 	let data: GameJSON | null = null;
+	let horn: Siren | null = null;
 
 	function homeScoreInc() {
 		fetch(`http://${location.hostname}:8000/counter/home/score/increment`, { method: 'post' });
@@ -170,7 +172,17 @@
 	</div>
 	<div class="game_clock">
 		<div class="numbers">
-			<Clock data={data?.game_clock} toggleKey="Space" />
+			<Clock data={data?.game_clock} toggleKey="Space">
+				<Siren frequencies={[560, 1500]} bind:this={horn} />
+				<Control
+					key="h"
+					handler={() => {
+						horn?.beep(500);
+					}}
+				>
+					Horn
+				</Control>
+			</Clock>
 		</div>
 	</div>
 	<div class="shot_clock">
@@ -201,12 +213,14 @@
 	}
 	.status {
 		display: inline;
-		position: relative;
-		top: 97cqh;
-		left: 99cqw;
+		position: absolute;
+		bottom: 0;
+		right: 0.5cqw;
 		text-align: right;
-		height: 1em;
-		width: 1em;
+		height: 3cqh;
+		width: 20cqw;
+		font-size: 2cqh;
+		container-type: size;
 	}
 	.home,
 	.away {
