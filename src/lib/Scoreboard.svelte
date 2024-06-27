@@ -382,8 +382,8 @@
 	.shot_clock {
 		position: absolute;
 		top: 75cqh;
-		left: 33cqw;
-		width: 34cqw;
+		left: 32cqw;
+		width: 36cqw;
 		height: 22cqh;
 		text-align: center;
 		border: solid #222 1cqh;

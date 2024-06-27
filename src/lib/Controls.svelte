@@ -10,7 +10,7 @@
 		margin: 0;
         align-items:end;
         justify-content: center;
-		/* align-content: flex-end; */
+		align-items: flex-end;
 	}
 	div > :global(div) {
 		display: flex;
