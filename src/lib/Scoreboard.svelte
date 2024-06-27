@@ -4,9 +4,36 @@
 	import Clock from '$lib/Clock.svelte';
 	import { type connectionStateType } from './types';
 	import ConnectionStatus from './ConnectionStatus.svelte';
+	import Controls from './Controls.svelte';
+	import Control from './Control.svelte';
+	import type { GameJSON } from './backends/rh_scoreboard_backend';
 
-	let data: any | null = null;
+	let data: GameJSON | null = null;
 
+	function homeScoreInc() {
+		fetch(`http://${location.hostname}:8000/home/teamcomponent/counter`, { method: 'post' });
+	}
+	function homeScoreDec() {
+		fetch(`http://${location.hostname}:8000/home/teamcomponent/counter`, { method: 'post' });
+	}
+	function homeFoulInc() {
+		fetch(`http://${location.hostname}:8000/home/teamcomponent/counter`, { method: 'post' });
+	}
+	function homeFoulDec() {
+		fetch(`http://${location.hostname}:8000/home/teamcomponent/counter`, { method: 'post' });
+	}
+	function awayScoreInc() {
+		fetch(`http://${location.hostname}:8000/away/teamcomponent/counter`, { method: 'post' });
+	}
+	function awayScoreDec() {
+		fetch(`http://${location.hostname}:8000/away/teamcomponent/counter`, { method: 'post' });
+	}
+	function awayFoulInc() {
+		fetch(`http://${location.hostname}:8000/away/teamcomponent/counter`, { method: 'post' });
+	}
+	function awayFoulDec() {
+		fetch(`http://${location.hostname}:8000/away/teamcomponent/counter`, { method: 'post' });
+	}
 	// context stores
 	const dataStore: Writable<Object | null> = writable(null);
 	setContext('data', dataStore);
@@ -91,18 +118,26 @@
 		Home
 		<div class="score">
 			<div class="numbers">{data?.home_score}</div>
+			<Controls>
+				<Control key="w" handler={homeScoreInc}>+</Control>
+				<Control key="s" handler={homeScoreDec}>-</Control>
+			</Controls>
 		</div>
 		<div class="fouls">
 			<div class="numbers">
 				{data?.home_tf}
 			</div>
+			<Controls>
+				<Control key="a" handler={homeFoulDec}>-</Control>
+				<Control key="d" handler={homeFoulInc}>+</Control>
+			</Controls>
 		</div>
 		<div class="tower">
 			{#if data?.home_team_foul_warning}
-			<span class="foul">F</span>
+				<span class="foul">F</span>
 			{/if}
 			{#if data?.home_team_timeout}
-			<span class="timeout">T</span>
+				<span class="timeout">T</span>
 			{/if}
 		</div>
 	</div>
@@ -110,29 +145,37 @@
 		Away
 		<div class="score">
 			<div class="numbers">{data?.away_score}</div>
+			<Controls>
+				<Control key="ArrowUp" desc="↑" handler={awayScoreInc}>+</Control>
+				<Control key="ArrowDown" desc="↓" handler={awayScoreDec}>-</Control>
+			</Controls>
 		</div>
 		<div class="fouls">
 			<div class="numbers">
 				{data?.away_tf}
 			</div>
+			<Controls>
+				<Control key="ArrowLeft" desc="←" handler={awayFoulDec}>-</Control>
+				<Control key="ArrowRight" desc="→" handler={awayFoulInc}>+</Control>
+			</Controls>
 		</div>
 		<div class="tower">
 			{#if data?.away_team_foul_warning}
-			<span class="foul">F</span>
+				<span class="foul">F</span>
 			{/if}
 			{#if data?.away_team_timeout}
-			<span class="timeout">T</span>
+				<span class="timeout">T</span>
 			{/if}
 		</div>
 	</div>
 	<div class="game_clock">
 		<div class="numbers">
-			<Clock data={data?.game_clock} />
+			<Clock data={data?.game_clock} toggleKey="Space" />
 		</div>
 	</div>
 	<div class="shot_clock">
 		<div class="numbers">
-			<Clock data={data?.shot_clock} />
+			<Clock data={data?.shot_clock} toggleKey="." />
 		</div>
 	</div>
 	<div class="status">
@@ -190,7 +233,8 @@
 		height: 44cqh;
 		font-size: 35cqh;
 	}
-	.tower .foul, .tower .timeout {
+	.tower .foul,
+	.tower .timeout {
 		display: inline-block;
 		width: 1em;
 		height: 1em;

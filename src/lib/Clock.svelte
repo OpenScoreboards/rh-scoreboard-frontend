@@ -2,9 +2,12 @@
 	import { getContext, onMount, tick } from 'svelte';
 	import Siren from './Siren.svelte';
 	import type { Writable } from 'svelte/store';
+	import Control from './Control.svelte';
+	import Controls from './Controls.svelte';
 
 	export let data: any | undefined;
 	export let sirenMs: number = 1000;
+	export let toggleKey = "";
 
 	let now = new Date();
 	let ms = now.getTime();
@@ -60,8 +63,16 @@
 	}
 
 	$: update(data);
+
+	function clockStart() {
+		fetch(`http://${location.hostname}:8000/clock/gameclock/start`, { method: 'post' });
+	}
 </script>
 
 <!-- <div class="clock">{disp}</div> -->
 <Siren bind:this={siren} />
 {disp}
+<Controls>
+	<Control key={toggleKey} handler={clockStart}>Start</Control>
+</Controls>
+
