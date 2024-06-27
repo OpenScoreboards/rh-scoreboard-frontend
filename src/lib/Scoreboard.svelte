@@ -218,7 +218,7 @@
 	</div>
 	<div class="shot_clock">
 		<div class="numbers">
-			<Clock data={data?.shot_clock} toggleKey=",">
+			<Clock data={data?.shot_clock} endpoint="shotclock" toggleKey=",">
 
 				<Control key="." handler={()=> {
 					shotClockSeconds(45);

@@ -6,6 +6,7 @@
 	import Controls from './Controls.svelte';
 
 	export let data: any | undefined;
+	export let endpoint: string = 'gameclock';
 	export let sirenMs: number = 1000;
 	export let toggleKey = '';
 
@@ -65,7 +66,9 @@
 	$: update(data);
 
 	function clockToggle() {
-		fetch(`http://${location.hostname}:8000/clock/gameclock/${running ? 'stop' : 'start'}`, { method: 'post' });
+		fetch(`http://${location.hostname}:8000/clock/${endpoint}/${running ? 'stop' : 'start'}`, {
+			method: 'post'
+		});
 	}
 </script>
 
