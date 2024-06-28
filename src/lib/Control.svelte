@@ -1,23 +1,15 @@
 <script lang="ts">
-	import { getContext, onMount } from 'svelte';
-	import type { KeyboardEventHandler } from 'svelte/elements';
-	import type { Writable } from 'svelte/store';
+	import { getContext } from 'svelte';
+	import type { UIEventHandler } from 'svelte/elements';
 
 	export let key: string = '';
 	export let desc: string | undefined = undefined;
-	export let handler: KeyboardEventHandler<Window>;
+	export let handler: UIEventHandler<HTMLButtonElement> | undefined;
 
 	const hotkeyAdd: CallableFunction = getContext('hotkeyAdd');
 
-	onMount(() => {
-		// enable hotkey
-		if (key) {
-			hotkeyAdd(key, handler);
-		}
-		return () => {
-			// disable hotkey
-		};
-	});
+	$: (key && handler !== null) && hotkeyAdd(key, handler);
+
 </script>
 
 <button data-hotkey={key} on:click={handler}>
