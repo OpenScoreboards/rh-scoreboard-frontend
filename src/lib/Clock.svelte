@@ -2,16 +2,20 @@
 	import { getContext, onMount, tick } from 'svelte';
 	import Control from './Control.svelte';
 	import Controls from './Controls.svelte';
-	import type { ClockInterface } from './types';
+	import type { ClockInterface, GameInterface } from './types';
+	import Siren from './Siren.svelte';
 	// import { minuteMs, secondMs } from './types';
 
 	// export let formats: string[] = ['1:00', '10', '0.0'];
 	export let clock: ClockInterface;
 	export let toggleKey = '';
+	export let siren: Siren | null | undefined = undefined;
+
+	let sirenMs = 1000;
 
 	interface Format {
 		ms: number;
-		format: {(ms: number): string};
+		format: { (ms: number): string };
 	}
 
 	// $: formatters = formats.map((fmt) => {
@@ -31,7 +35,7 @@
 	// 	} else if (vals.length == 2) {
 
 	// 	}
-	// 	return 
+	// 	return
 	// })
 	let now = new Date();
 	let ms = now.getTime();
@@ -63,15 +67,13 @@
 			disp_mins = Math.floor(clock_mins);
 			disp =
 				clock_secs > 10
-					? (
-						disp_mins > 0
+					? disp_mins > 0
 						? `${disp_mins}:${(disp_secs + '').padStart(2, '0')}`
 						: `${(disp_secs + '').padStart(2, '0')}`
-					)
 					: `${(disp_secs + '').padStart(2, '')}.${(Math.floor(disp_mils / 100) + '').padStart(1, '0')}`;
 
 			if (prev_ms > 0 && remaining_ms == 0 && prev_running) {
-				// siren.beep(sirenMs);
+				if (siren) siren.beep(sirenMs);
 				// console.table({ prev_ms, remaining_ms, prev_running });
 			}
 			prev_ms = remaining_ms;
@@ -84,10 +86,10 @@
 		};
 	});
 
-	$: running = $clock.state == 'Running'
+	$: running = $clock.state == 'Running';
 
 	function clockToggle() {
-		if(running) {
+		if (running) {
 			clock?.stop();
 		} else {
 			clock?.start();
@@ -98,6 +100,9 @@
 <!-- <div class="clock">{disp}</div> -->
 {disp}
 <Controls>
+	{#if siren !== null}
+		<Siren bind:this={siren} />
+	{/if}
 	<Control key={toggleKey} handler={clockToggle}>{running ? 'Stop' : 'Start'}</Control>
 	<slot />
 </Controls>

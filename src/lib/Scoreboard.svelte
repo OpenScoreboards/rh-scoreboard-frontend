@@ -133,9 +133,9 @@
 	</div>
 	<div class="game_clock">
 		<div class="numbers">
-			<Clock clock={game.game_clock} toggleKey="Space">
-				<Siren audio={audio} bind:this={siren} game={game} />
-				<Siren audio={audio} frequencies={[560, 1500]} game={game} bind:this={horn} />
+			<Clock clock={game.game_clock} toggleKey="Space" siren={null}>
+				<Siren {audio} bind:this={siren} {game} />
+				<Siren {audio} frequencies={[560, 1500]} bind:this={horn} />
 				<Control
 					key="h"
 					handler={() => {

@@ -5,20 +5,22 @@
 	import type { Game } from './backends/local';
 
 	export let audio: AudioContext | null = null;
-	export let game: GameInterface;
+	export let game: GameInterface | null = null;
 	export let frequencies: number[] = [480, 560];
 
 	let gainNode: GainNode | null = null;
 
 	const audioStore: Writable<AudioContext | null> = getContext('audio');
 
-	$: trigger = $game.siren;
-	let prevTrigger = !game.siren;
+	let trigger: boolean | undefined = game?.siren;
+	let prevTrigger: boolean | undefined = !game?.siren;
 
-	$: (()=>{
+	$: (() => {
+		if ($game == null) return;
+		trigger = $game.siren;
 		if (trigger && !prevTrigger) beep(1000);
 		prevTrigger = trigger;
-	})()
+	})();
 
 	function connectAudio(newAudio: AudioContext | null) {
 		if (newAudio === null || gainNode !== null) return;
