@@ -3,11 +3,12 @@
 	import Siren from './Siren.svelte';
 	import Control from './Control.svelte';
 	import Controls from './Controls.svelte';
+	import type { ClockInterface } from './types';
 	// import { minuteMs, secondMs } from './types';
 
 	// export let formats: string[] = ['1:00', '10', '0.0'];
 	export let data: any | undefined;
-	export let endpoint: string = 'gameclock';
+	export let clock: ClockInterface | undefined;
 	export let sirenMs: number = 1000;
 	export let toggleKey = '';
 
@@ -97,9 +98,11 @@
 	$: update(data);
 
 	function clockToggle() {
-		fetch(`http://${location.hostname}:8000/clock/${endpoint}/${running ? 'stop' : 'start'}`, {
-			method: 'post'
-		});
+		if(running) {
+			clock?.stop();
+		} else {
+			clock?.start();
+		}
 	}
 </script>
 

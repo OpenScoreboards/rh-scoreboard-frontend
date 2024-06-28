@@ -2,50 +2,17 @@
 	import { setContext, onMount } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import Clock from '$lib/Clock.svelte';
-	import { minuteMs, secondMs, type connectionStateType } from './types';
+	import { minuteMs, secondMs, type connectionStateType, type GameInterface } from './types';
 	import ConnectionStatus from './ConnectionStatus.svelte';
 	import Controls from './Controls.svelte';
 	import Control from './Control.svelte';
-	import type { GameJSON } from './backends/rh_scoreboard_backend';
+	import { Game, type GameJSON } from './backends/rh_scoreboard_backend';
 	import Siren from './Siren.svelte';
 
+	let game: GameInterface | null = null;
 	let data: GameJSON | null = null;
 	let horn: Siren | null = null;
 
-	function homeScoreInc() {
-		fetch(`http://${location.hostname}:8000/counter/home/score/increment`, { method: 'post' });
-	}
-	function homeScoreDec() {
-		fetch(`http://${location.hostname}:8000/counter/home/score/decrement`, { method: 'post' });
-	}
-	function homeFoulInc() {
-		fetch(`http://${location.hostname}:8000/counter/home/teamfouls/increment`, { method: 'post' });
-	}
-	function homeFoulDec() {
-		fetch(`http://${location.hostname}:8000/counter/home/teamfouls/decrement`, { method: 'post' });
-	}
-	function awayScoreInc() {
-		fetch(`http://${location.hostname}:8000/counter/away/score/increment`, { method: 'post' });
-	}
-	function awayScoreDec() {
-		fetch(`http://${location.hostname}:8000/counter/away/score/decrement`, { method: 'post' });
-	}
-	function awayFoulInc() {
-		fetch(`http://${location.hostname}:8000/counter/away/teamfouls/increment`, { method: 'post' });
-	}
-	function awayFoulDec() {
-		fetch(`http://${location.hostname}:8000/counter/away/teamfouls/decrement`, { method: 'post' });
-	}
-	function setGameClock(ms: number) {
-		fetch(`http://${location.hostname}:8000/clock/gameclock/set?value=${ms}`, {
-			method: 'post'
-		});
-	}
-	function shotClockSeconds(seconds: number) {
-		fetch(`http://${location.hostname}:8000/clock/shotclock/set?value=${seconds * 1000}`, {
-			method: 'post'
-		});
-	}
 	// context stores
 	const dataStore: Writable<Object | null> = writable(null);
 	setContext('data', dataStore);
@@ -71,6 +38,7 @@
 	});
 	function connect() {
 		const backendUrl = location.hostname + ':8000';
+		game = new Game(`${location.protocol}//${location.hostname}:8000/`);
 		console.log(backendUrl);
 		let socket = new WebSocket(`ws://${backendUrl}/data_stream`);
 		stateStore.set('warn');
@@ -91,7 +59,7 @@
 		};
 	}
 
-	$: console.table({ data });
+	// $: console.table({ data });
 
 	const hotkeys: Map<string | number, { (): void }> = new Map();
 	function hotkeyAdd(key: string | number, handler: { (): void }) {
@@ -131,8 +99,8 @@
 		<div class="score">
 			<div class="numbers">{data?.home_score}</div>
 			<Controls>
-				<Control key="s" handler={homeScoreDec}>-</Control>
-				<Control key="w" handler={homeScoreInc}>+</Control>
+				<Control key="s" handler={game?.home.scoreDecrement}>-</Control>
+				<Control key="w" handler={game?.home.scoreIncrement}>+</Control>
 			</Controls>
 		</div>
 		<div class="fouls">
@@ -140,8 +108,8 @@
 				{data?.home_tf}
 			</div>
 			<Controls>
-				<Control key="a" handler={homeFoulDec}>-</Control>
-				<Control key="d" handler={homeFoulInc}>+</Control>
+				<Control key="a" handler={game?.home.foulsDecrement}>-</Control>
+				<Control key="d" handler={game?.home.foulsIncrement}>+</Control>
 			</Controls>
 		</div>
 		<div class="tower">
@@ -158,8 +126,8 @@
 		<div class="score">
 			<div class="numbers">{data?.away_score}</div>
 			<Controls>
-				<Control key="ArrowDown" desc="↓" handler={awayScoreDec}>-</Control>
-				<Control key="ArrowUp" desc="↑" handler={awayScoreInc}>+</Control>
+				<Control key="ArrowDown" desc="↓" handler={game?.away.scoreDecrement}>-</Control>
+				<Control key="ArrowUp" desc="↑" handler={game?.away.scoreIncrement}>+</Control>
 			</Controls>
 		</div>
 		<div class="fouls">
@@ -167,8 +135,8 @@
 				{data?.away_tf}
 			</div>
 			<Controls>
-				<Control key="ArrowLeft" desc="←" handler={awayFoulDec}>-</Control>
-				<Control key="ArrowRight" desc="→" handler={awayFoulInc}>+</Control>
+				<Control key="ArrowLeft" desc="←" handler={game?.away.foulsDecrement}>-</Control>
+				<Control key="ArrowRight" desc="→" handler={game?.away.foulsIncrement}>+</Control>
 			</Controls>
 		</div>
 		<div class="tower">
@@ -182,7 +150,7 @@
 	</div>
 	<div class="game_clock">
 		<div class="numbers">
-			<Clock data={data?.game_clock} toggleKey="Space">
+			<Clock data={data?.game_clock} clock={game?.game_clock} toggleKey="Space">
 				<Siren frequencies={[560, 1500]} bind:this={horn} />
 				<Control
 					key="h"
@@ -196,7 +164,7 @@
 					<Control
 						handler={() => {
 							if (data?.game_clock.state == 'Running') return;
-							setGameClock(25 * minuteMs);
+							game?.game_clock.set(25 * minuteMs);
 						}}
 					>
 						25m
@@ -204,7 +172,7 @@
 					<Control
 						handler={() => {
 							if (data?.game_clock.state == 'Running') return;
-							setGameClock(20 * minuteMs);
+							game?.game_clock.set(20 * minuteMs);
 						}}
 					>
 						20m
@@ -212,7 +180,7 @@
 					<Control
 						handler={() => {
 							if (data?.game_clock.state == 'Running') return;
-							setGameClock(0);
+							game?.game_clock.set(0);
 						}}
 					>
 						0m
@@ -221,16 +189,18 @@
 				<div>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							setGameClock(data?.game_clock.last_time_remaining + minuteMs);
+							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
+								return;
+							game?.game_clock.adjust(minuteMs);
 						}}
 					>
 						+1m
 					</Control>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							setGameClock(data?.game_clock.last_time_remaining - minuteMs);
+							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
+								return;
+							game?.game_clock.adjust(-minuteMs);
 						}}
 					>
 						-1m
@@ -239,16 +209,18 @@
 				<div>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							setGameClock(data?.game_clock.last_time_remaining + 10 * secondMs);
+							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
+								return;
+							game?.game_clock.adjust(10 * secondMs);
 						}}
 					>
 						+10s
 					</Control>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							setGameClock(data?.game_clock.last_time_remaining - 10 * secondMs);
+							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
+								return;
+							game?.game_clock.adjust(-10 * secondMs);
 						}}
 					>
 						-10s
@@ -257,16 +229,18 @@
 				<div>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							setGameClock(data?.game_clock.last_time_remaining + secondMs);
+							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
+								return;
+							game?.game_clock.adjust(secondMs);
 						}}
 					>
 						+1s
 					</Control>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							setGameClock(data?.game_clock.last_time_remaining - secondMs);
+							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
+								return;
+							game?.game_clock.adjust(-secondMs);
 						}}
 					>
 						-1s
@@ -277,11 +251,11 @@
 	</div>
 	<div class="shot_clock">
 		<div class="numbers">
-			<Clock data={data?.shot_clock} endpoint="shotclock" toggleKey=",">
+			<Clock data={data?.shot_clock} clock={game?.shot_clock} toggleKey=",">
 				<Control
 					key="."
 					handler={() => {
-						shotClockSeconds(45);
+						game?.shot_clock.set(45 * secondMs);
 					}}
 				>
 					45s

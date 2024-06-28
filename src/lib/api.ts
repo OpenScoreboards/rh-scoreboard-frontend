@@ -69,8 +69,8 @@ export class ReliableWebSocket<T> {
 	state: 'closed' | 'opening' | 'open';
 	autoRestart: boolean;
 	timeout: number;
-	onmessage?: { (ev: MessageEvent<T>): void; };
-	onerror?: { (ev: Event): void; };
+	onmessage?: { (ev: MessageEvent<T>): void };
+	onerror?: { (ev: Event): void };
 
 	constructor(url: string | URL, protocols?: string | string[], timeout: number = 10000) {
 		this.url = url;
@@ -78,10 +78,12 @@ export class ReliableWebSocket<T> {
 		this.state = 'closed';
 		this.autoRestart = true;
 		this.timeout = timeout;
+		this.open = this.open.bind(this);
+		this.close = this.close.bind(this);
 	}
 	open() {
 		this.close();
-		this.state = 'opening'
+		this.state = 'opening';
 		this.socket = new WebSocket(this.url, this.protocols);
 		const timeout = setTimeout(() => {
 			console.log(`Timeout ${this.url}: ${this.timeout}`);
@@ -89,14 +91,16 @@ export class ReliableWebSocket<T> {
 			if (this.autoRestart) this.open();
 		}, this.timeout);
 		this.socket.onopen = (ev: Event) => {
+			clearTimeout(timeout);
 			console.log(`Connected ${this.url}: ${ev.timeStamp}`);
 			this.state = 'open';
-			clearTimeout(timeout);
 		};
 		this.socket.onclose = (ev: CloseEvent) => {
+			clearTimeout(timeout);
 			console.log(`Closed ${this.url}: ${ev.reason}`);
 			this.close();
-			if (this.autoRestart) this.open();
+			if (!this.autoRestart) return;
+			setTimeout(this.open, 1000);
 		};
 		if (typeof this.onmessage !== 'undefined') {
 			this.socket.onmessage = this.onmessage;
@@ -108,6 +112,7 @@ export class ReliableWebSocket<T> {
 	close() {
 		this.state = 'closed';
 		if (typeof this.socket == 'undefined') return;
+		this.socket.onclose = null;
 		this.socket.close();
 		this.socket = undefined;
 	}
