@@ -4,9 +4,10 @@
 
 <style>
 	div {
+		background: rgba(1,1,1,0.7);
 		position: absolute;
 		display: flex;
-		bottom: 1cqh;
+		bottom: 2cqh;
 		height: auto;
 		width: 96cqw;
 		padding: 0;
@@ -25,7 +26,7 @@
 		border: solid 1px white;
 		border-radius: 4px;
 		cursor: pointer;
-		font-size: 1.7vh;
+		font-size: 4vh;
 		margin: 0.3ex;
 		transition: opacity 0.2s;
 		opacity: 0.1;
