@@ -2,7 +2,6 @@
 	import type { connectionStateType } from './types';
 
 	export let status: connectionStateType;
-
 </script>
 
 <span class={status}>●</span>
@@ -21,6 +20,9 @@
 	.good {
 		color: green;
 	}
+	/* :global(main[data-display=interactive]) .good {
+		color: green;
+	} */
 	.warn {
 		color: orange;
 	}

@@ -1,3 +1,6 @@
+<div data-class="controls">
+	<slot />
+</div>
 
 <style>
 	div {
@@ -8,8 +11,8 @@
 		width: 96cqw;
 		padding: 0;
 		margin: 0;
-        align-items:end;
-        justify-content: center;
+		align-items: end;
+		justify-content: center;
 		align-items: flex-end;
 	}
 	div > :global(div) {
@@ -23,16 +26,12 @@
 		border-radius: 4px;
 		cursor: pointer;
 		font-size: 1.7vh;
-        margin: 0.3ex;
+		margin: 0.3ex;
 		transition: opacity 0.2s;
 		opacity: 0.1;
 	}
-	div :global(button):hover {
+	div[data-class='controls']:hover :global(button):hover {
 		transition: opacity 0.2s;
 		opacity: 1;
 	}
 </style>
-
-<div>
-    <slot />
-</div>

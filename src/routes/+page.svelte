@@ -2,7 +2,7 @@
 	import Scoreboard from '$lib/Scoreboard.svelte';
 </script>
 
-	<Scoreboard />
+<Scoreboard />
 
 <style>
 	:global(body) {

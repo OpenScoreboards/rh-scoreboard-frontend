@@ -13,6 +13,7 @@
 	let game: GameInterface = new LocalGame();
 	let siren: Siren | null = null;
 	let horn: Siren | null = null;
+	let main: HTMLElement | null = null;
 
 	// context stores
 	let audio: AudioContext | null = null;
@@ -27,6 +28,9 @@
 		}
 	}
 	onMount(() => {
+		const url = new URL(window.location.href);
+		const display = url.searchParams.get('display') || 'interactive';
+		if (main !== null) main.setAttribute('data-display', display);
 		audio = new AudioContext();
 		game = new Game(`${location.protocol}//${location.hostname}:8000/`);
 		return () => {};
@@ -41,6 +45,7 @@
 	let focused = false;
 	function keydown(ev: KeyboardEvent) {
 		if (focused) return;
+		if(ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
 		for (const key of [ev.key, ev.code]) {
 			const handler = hotkeys.get(key);
 			if (typeof handler !== 'undefined') {
@@ -59,7 +64,7 @@
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <svelte:document class="scoreboard" on:click={resumeAudio} on:keypress={resumeAudio} />
 
-<main class="scoreboard">
+<main bind:this={main}>
 	<style>
 		@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..700;1,100..700&display=swap');
 		/* @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap'); */
@@ -252,7 +257,7 @@
 			opacity: 0.33;
 		}
 	}
-	.scoreboard {
+	main {
 		position: relative;
 		background-color: black;
 		color: white;
@@ -300,6 +305,7 @@
 	}
 	.tower .foul,
 	.tower .timeout {
+		border: none;
 		height: 44cqh;
 		font-size: 35cqh;
 		display: inline-block;

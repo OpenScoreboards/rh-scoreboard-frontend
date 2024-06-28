@@ -8,11 +8,10 @@
 
 	const hotkeyAdd: CallableFunction = getContext('hotkeyAdd');
 
-	$: (key && handler !== null) && hotkeyAdd(key, handler);
-
+	$: key && handler !== null && hotkeyAdd(key, handler);
 </script>
 
-<button data-hotkey={key} on:click={handler}>
+<button class="control" data-hotkey={key} on:click={handler}>
 	{#if key}
 		<kbd>{desc || key}</kbd>
 	{/if}
@@ -20,6 +19,15 @@
 </button>
 
 <style>
+	:global(main:not([data-display='interactive'])) button {
+		opacity: 0;
+	}
+	:global(div[data-class='controls']:hover) {
+		background: rgba(1, 1, 1, 0.8);
+	}
+	:global(div[data-class='controls']:hover) button {
+		opacity: 0.5;
+	}
 	kbd {
 		display: inline-block;
 		height: 1.2em;
