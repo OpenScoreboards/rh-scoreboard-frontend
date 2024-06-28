@@ -4,21 +4,14 @@ export const secondMs = 1000;
 export const minuteMs = 60000;
 
 export interface ClockInterface {
-    last_state_change: number;
-    last_time_remaining: number;
-    state: "Running" | "Stopped";
-}
+	last_state_change: number;
+	last_time_remaining: number;
+	state: 'Running' | 'Stopped';
 
-export class ClockBase implements ClockInterface {
-    last_state_change: number;
-    last_time_remaining: number;
-    state: "Running" | "Stopped";
-
-    constructor() {
-        this.last_state_change = 0;
-        this.last_time_remaining = 0;
-        this.state = "Stopped"
-    }
+	start: () => void;
+	stop: () => void;
+	set: (value: number) => void;
+	adjust: (value: number) => void;
 }
 
 export interface TeamScoreInterface {
@@ -27,19 +20,19 @@ export interface TeamScoreInterface {
 	timeout_requested: boolean;
 	fouls_accumulated: boolean;
 
-	scoreIncrement: (add?: number) => void;
-	scoreDecrement: (subtract?: number) => void;
+	scoreIncrement: () => void;
+	scoreDecrement: () => void;
 
-	foulsIncrement: (add?: number) => void;
-	foulsDecrement: (subtract?: number) => void;
+	foulsIncrement: () => void;
+	foulsDecrement: () => void;
 
-    toggleTimeout: () => void;
-    toggleFouls: () => void;
+	toggleTimeout: () => void;
+	toggleFouls: () => void;
 }
 
 export interface GameInterface {
-    home: TeamScoreInterface;
-    away: TeamScoreInterface;
-    game_clock: ClockInterface;
-    shot_clock: ClockInterface;
+	home: TeamScoreInterface;
+	away: TeamScoreInterface;
+	game_clock: ClockInterface;
+	shot_clock: ClockInterface;
 }
