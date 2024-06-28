@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
-	import { type Writable } from 'svelte/store';
 	import type { connectionStateType } from './types';
 
-	const state: Writable<connectionStateType> = getContext('state');
+	export let status: connectionStateType;
+
 </script>
 
-<span class={$state}>●</span>
+<span class={status}>●</span>
 
 <style>
 	@keyframes blinker {

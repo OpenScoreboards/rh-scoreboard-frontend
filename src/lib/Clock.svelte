@@ -1,15 +1,12 @@
 <script lang="ts">
 	import { getContext, onMount, tick } from 'svelte';
-	import Siren from './Siren.svelte';
 	import Control from './Control.svelte';
 	import Controls from './Controls.svelte';
 	import type { ClockInterface } from './types';
 	// import { minuteMs, secondMs } from './types';
 
 	// export let formats: string[] = ['1:00', '10', '0.0'];
-	export let data: any | undefined;
-	export let clock: ClockInterface | undefined;
-	export let sirenMs: number = 1000;
+	export let clock: ClockInterface;
 	export let toggleKey = '';
 
 	interface Format {
@@ -50,15 +47,13 @@
 	let running = false;
 	let prev_running = false;
 
-	let siren: Siren;
-
 	onMount(() => {
 		const interval = setInterval(async () => {
 			now = new Date();
 			ms = now.getTime();
 			remaining_ms = Math.max(
 				0,
-				(data?.last_time_remaining || 0) - (running ? ms - data?.last_state_change : 0)
+				$clock.last_time_remaining - (running ? ms - $clock.last_state_change : 0)
 			);
 
 			clock_secs = remaining_ms / 1000;
@@ -76,7 +71,7 @@
 					: `${(disp_secs + '').padStart(2, '')}.${(Math.floor(disp_mils / 100) + '').padStart(1, '0')}`;
 
 			if (prev_ms > 0 && remaining_ms == 0 && prev_running) {
-				siren.beep(sirenMs);
+				// siren.beep(sirenMs);
 				// console.table({ prev_ms, remaining_ms, prev_running });
 			}
 			prev_ms = remaining_ms;
@@ -89,13 +84,7 @@
 		};
 	});
 
-	function update(newData: any | undefined) {
-		// console.table({ state, newData });
-		if (typeof newData == 'undefined') return;
-		running = newData.state == 'Running';
-	}
-
-	$: update(data);
+	$: running = $clock.state == 'Running'
 
 	function clockToggle() {
 		if(running) {
@@ -107,7 +96,6 @@
 </script>
 
 <!-- <div class="clock">{disp}</div> -->
-<Siren bind:this={siren} />
 {disp}
 <Controls>
 	<Control key={toggleKey} handler={clockToggle}>{running ? 'Stop' : 'Start'}</Control>

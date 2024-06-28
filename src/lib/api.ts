@@ -1,3 +1,12 @@
+import {
+	writable,
+	type Invalidator,
+	type Readable,
+	type Subscriber,
+	type Writable
+} from 'svelte/store';
+import type { connectionStateType } from './types';
+
 export class Fetcher {
 	url: string;
 	timeout: number;
@@ -62,13 +71,14 @@ export class Fetcher {
 	}
 }
 
-export class ReliableWebSocket<T> {
+export class ReliableWebSocket<T> implements Readable<connectionStateType> {
 	socket?: WebSocket;
 	url: string | URL;
 	protocols?: string | string[];
 	state: 'closed' | 'opening' | 'open';
 	autoRestart: boolean;
 	timeout: number;
+	store: Writable<connectionStateType>;
 	onmessage?: { (ev: MessageEvent<T>): void };
 	onerror?: { (ev: Event): void };
 
@@ -78,22 +88,29 @@ export class ReliableWebSocket<T> {
 		this.state = 'closed';
 		this.autoRestart = true;
 		this.timeout = timeout;
-		this.open = this.open.bind(this);
-		this.close = this.close.bind(this);
+		this.store = writable('idle');
 	}
-	open() {
+	subscribe = (
+		run: Subscriber<connectionStateType>,
+		invalidate?: Invalidator<connectionStateType> | undefined
+	) => {
+		return this.store.subscribe(run, invalidate);
+	};
+	open = () => {
 		this.close();
 		this.state = 'opening';
+		this.store.set('idle');
 		this.socket = new WebSocket(this.url, this.protocols);
 		const timeout = setTimeout(() => {
 			console.log(`Timeout ${this.url}: ${this.timeout}`);
 			this.close();
+			this.store.set('fail');
 			if (this.autoRestart) this.open();
 		}, this.timeout);
 		this.socket.onopen = (ev: Event) => {
 			clearTimeout(timeout);
 			console.log(`Connected ${this.url}: ${ev.timeStamp}`);
-			this.state = 'open';
+			this.store.set('good');
 		};
 		this.socket.onclose = (ev: CloseEvent) => {
 			clearTimeout(timeout);
@@ -108,12 +125,13 @@ export class ReliableWebSocket<T> {
 		if (typeof this.onerror !== 'undefined') {
 			this.socket.onerror = this.onerror;
 		}
-	}
-	close() {
+	};
+	close = () => {
 		this.state = 'closed';
+		this.store.set('idle');
 		if (typeof this.socket == 'undefined') return;
 		this.socket.onclose = null;
 		this.socket.close();
 		this.socket = undefined;
-	}
+	};
 }

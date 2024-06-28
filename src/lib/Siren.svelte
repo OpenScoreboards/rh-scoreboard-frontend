@@ -1,16 +1,32 @@
 <script lang="ts">
+	import { type GameInterface } from './types';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
+	import type { Game } from './backends/local';
 
+	export let audio: AudioContext | null = null;
+	export let game: GameInterface;
 	export let frequencies: number[] = [480, 560];
+
 	let gainNode: GainNode | null = null;
 
 	const audioStore: Writable<AudioContext | null> = getContext('audio');
-	let audio: AudioContext | null = null;
+
+	$: trigger = $game.siren;
+	let prevTrigger = !game.siren;
+
+	$: (()=>{
+		if (trigger && !prevTrigger) beep(1000);
+		prevTrigger = trigger;
+	})()
 
 	function connectAudio(newAudio: AudioContext | null) {
 		if (newAudio === null || gainNode !== null) return;
-		audio = newAudio;
+		if (audio === null) {
+			audio = newAudio;
+		} else {
+			newAudio = audio;
+		}
 		gainNode = newAudio.createGain();
 		gainNode.gain.value = 0; // no volume
 		gainNode.connect(newAudio.destination);
@@ -40,7 +56,7 @@
 			for (const oscillator of oscillators) {
 				oscillator.stop(audio.currentTime + 1);
 			}
-			console.log('silent...');
+			console.log('silence...');
 		}, durationMs);
 	}
 </script>

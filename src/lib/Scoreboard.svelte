@@ -2,27 +2,22 @@
 	import { setContext, onMount } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import Clock from '$lib/Clock.svelte';
-	import { minuteMs, secondMs, type connectionStateType, type GameInterface } from './types';
+	import { minuteMs, secondMs, type GameInterface } from './types';
 	import ConnectionStatus from './ConnectionStatus.svelte';
 	import Controls from './Controls.svelte';
 	import Control from './Control.svelte';
+	import { Game as LocalGame } from './backends/local';
 	import { Game, type GameJSON } from './backends/rh_scoreboard_backend';
 	import Siren from './Siren.svelte';
 
-	let game: GameInterface | null = null;
-	let data: GameJSON | null = null;
+	let game: GameInterface = new LocalGame();
+	let siren: Siren | null = null;
 	let horn: Siren | null = null;
 
 	// context stores
-	const dataStore: Writable<Object | null> = writable(null);
-	setContext('data', dataStore);
-
 	let audio: AudioContext | null = null;
 	const audioStore: Writable<AudioContext | null> = writable(null);
 	setContext('audio', audioStore);
-
-	const stateStore: Writable<connectionStateType> = writable('idle');
-	setContext('state', stateStore);
 
 	function resumeAudio() {
 		if (audio?.state == 'suspended') {
@@ -33,33 +28,9 @@
 	}
 	onMount(() => {
 		audio = new AudioContext();
-		connect();
+		game = new Game(`${location.protocol}//${location.hostname}:8000/`);
 		return () => {};
 	});
-	function connect() {
-		const backendUrl = location.hostname + ':8000';
-		game = new Game(`${location.protocol}//${location.hostname}:8000/`);
-		console.log(backendUrl);
-		let socket = new WebSocket(`ws://${backendUrl}/data_stream`);
-		stateStore.set('warn');
-		socket.onmessage = (event) => {
-			stateStore.set('good');
-			data = JSON.parse(event.data);
-			dataStore.set(data);
-		};
-		socket.onerror = (ev) => {
-			stateStore.set('fail');
-			dataStore.set(null);
-			console.log(ev);
-		};
-		socket.onclose = (ev) => {
-			stateStore.set('fail');
-			socket.close();
-			connect();
-		};
-	}
-
-	// $: console.table({ data });
 
 	const hotkeys: Map<string | number, { (): void }> = new Map();
 	function hotkeyAdd(key: string | number, handler: { (): void }) {
@@ -95,63 +66,76 @@
 		@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Lekton:ital,wght@0,400;0,700;1,400&display=swap');
 	</style>
 	<div class="home">
-		Home
+		{game.home.label}
 		<div class="score">
-			<div class="numbers">{data?.home_score}</div>
+			<div class="numbers">{$game.home.score}</div>
 			<Controls>
-				<Control key="s" handler={game?.home.scoreDecrement}>-</Control>
-				<Control key="w" handler={game?.home.scoreIncrement}>+</Control>
+				<Control key="s" handler={game.home.scoreDecrement}>-</Control>
+				<Control key="w" handler={game.home.scoreIncrement}>+</Control>
 			</Controls>
 		</div>
 		<div class="fouls">
 			<div class="numbers">
-				{data?.home_tf}
+				{$game.home.team_fouls}
 			</div>
 			<Controls>
-				<Control key="a" handler={game?.home.foulsDecrement}>-</Control>
-				<Control key="d" handler={game?.home.foulsIncrement}>+</Control>
+				<Control key="a" handler={game.home.foulsDecrement}>-</Control>
+				<Control key="d" handler={game.home.foulsIncrement}>+</Control>
 			</Controls>
 		</div>
 		<div class="tower">
-			{#if data?.home_team_foul_warning}
-				<span class="foul">F</span>
-			{/if}
-			{#if data?.home_team_timeout}
-				<span class="timeout">T</span>
-			{/if}
+			<button
+				on:click={$game.home.toggleFouls}
+				class={`foul ${$game.home.foul_warning ? 'flash' : 'inactive'}`}
+			>
+				F
+			</button>
+			<button
+				on:click={$game.home.toggleTimeout}
+				class={`timeout ${$game.home.timeout_requested ? 'flash' : 'inactive'}`}
+			>
+				T
+			</button>
 		</div>
 	</div>
 	<div class="away">
-		Away
+		{game.away.label}
 		<div class="score">
-			<div class="numbers">{data?.away_score}</div>
+			<div class="numbers">{$game.away.score}</div>
 			<Controls>
-				<Control key="ArrowDown" desc="↓" handler={game?.away.scoreDecrement}>-</Control>
-				<Control key="ArrowUp" desc="↑" handler={game?.away.scoreIncrement}>+</Control>
+				<Control key="ArrowDown" desc="↓" handler={game.away.scoreDecrement}>-</Control>
+				<Control key="ArrowUp" desc="↑" handler={game.away.scoreIncrement}>+</Control>
 			</Controls>
 		</div>
 		<div class="fouls">
 			<div class="numbers">
-				{data?.away_tf}
+				{$game.away.team_fouls}
 			</div>
 			<Controls>
-				<Control key="ArrowLeft" desc="←" handler={game?.away.foulsDecrement}>-</Control>
-				<Control key="ArrowRight" desc="→" handler={game?.away.foulsIncrement}>+</Control>
+				<Control key="ArrowLeft" desc="←" handler={game.away.foulsDecrement}>-</Control>
+				<Control key="ArrowRight" desc="→" handler={game.away.foulsIncrement}>+</Control>
 			</Controls>
 		</div>
 		<div class="tower">
-			{#if data?.away_team_foul_warning}
-				<span class="foul">F</span>
-			{/if}
-			{#if data?.away_team_timeout}
-				<span class="timeout">T</span>
-			{/if}
+			<button
+				on:click={$game.away.toggleFouls}
+				class={`foul ${$game.away.foul_warning ? 'flash' : 'inactive'}`}
+			>
+				F
+			</button>
+			<button
+				on:click={$game.away.toggleTimeout}
+				class={`timeout ${$game.away.timeout_requested ? 'flash' : 'inactive'}`}
+			>
+				T
+			</button>
 		</div>
 	</div>
 	<div class="game_clock">
 		<div class="numbers">
-			<Clock data={data?.game_clock} clock={game?.game_clock} toggleKey="Space">
-				<Siren frequencies={[560, 1500]} bind:this={horn} />
+			<Clock clock={game.game_clock} toggleKey="Space">
+				<Siren audio={audio} bind:this={siren} game={game} />
+				<Siren audio={audio} frequencies={[560, 1500]} game={game} bind:this={horn} />
 				<Control
 					key="h"
 					handler={() => {
@@ -163,24 +147,24 @@
 				<div>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							game?.game_clock.set(25 * minuteMs);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.set(25 * minuteMs);
 						}}
 					>
 						25m
 					</Control>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							game?.game_clock.set(20 * minuteMs);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.set(20 * minuteMs);
 						}}
 					>
 						20m
 					</Control>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running') return;
-							game?.game_clock.set(0);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.set(0);
 						}}
 					>
 						0m
@@ -189,18 +173,16 @@
 				<div>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
-								return;
-							game?.game_clock.adjust(minuteMs);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.adjust(minuteMs);
 						}}
 					>
 						+1m
 					</Control>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
-								return;
-							game?.game_clock.adjust(-minuteMs);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.adjust(-minuteMs);
 						}}
 					>
 						-1m
@@ -209,18 +191,16 @@
 				<div>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
-								return;
-							game?.game_clock.adjust(10 * secondMs);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.adjust(10 * secondMs);
 						}}
 					>
 						+10s
 					</Control>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
-								return;
-							game?.game_clock.adjust(-10 * secondMs);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.adjust(-10 * secondMs);
 						}}
 					>
 						-10s
@@ -229,18 +209,16 @@
 				<div>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
-								return;
-							game?.game_clock.adjust(secondMs);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.adjust(secondMs);
 						}}
 					>
 						+1s
 					</Control>
 					<Control
 						handler={() => {
-							if (data?.game_clock.state == 'Running' || !data?.game_clock.last_time_remaining)
-								return;
-							game?.game_clock.adjust(-secondMs);
+							if ($game.game_clock.state == 'Running') return;
+							game.game_clock.adjust(-secondMs);
 						}}
 					>
 						-1s
@@ -251,11 +229,11 @@
 	</div>
 	<div class="shot_clock">
 		<div class="numbers">
-			<Clock data={data?.shot_clock} clock={game?.shot_clock} toggleKey=",">
+			<Clock clock={game.shot_clock} toggleKey=",">
 				<Control
 					key="."
 					handler={() => {
-						game?.shot_clock.set(45 * secondMs);
+						game.shot_clock.set(45 * secondMs);
 					}}
 				>
 					45s
@@ -264,7 +242,7 @@
 		</div>
 	</div>
 	<div class="status">
-		<ConnectionStatus />
+		<ConnectionStatus status={$game.connection_state} />
 	</div>
 </main>
 
@@ -322,12 +300,20 @@
 	}
 	.tower .foul,
 	.tower .timeout {
+		height: 44cqh;
+		font-size: 35cqh;
 		display: inline-block;
 		width: 1em;
 		height: 1em;
 		line-height: 1em;
 		border-radius: 2cqh;
 		color: white;
+		cursor: pointer;
+	}
+	.tower .inactive {
+		opacity: 0.1;
+	}
+	.tower .flash {
 		animation: blinker 1s ease-in-out infinite;
 	}
 	.tower .foul {
