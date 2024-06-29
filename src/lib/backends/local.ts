@@ -105,6 +105,8 @@ export class Game implements GameInterface {
 	game_clock: Clock;
 	shot_clock: Clock;
 	siren: boolean;
+	period: number;
+	match_title: string;
 	connection_state: connectionStateType;
 	siren_timer: ReturnType<typeof setTimeout> | null;
 	store: Writable<GameInterface>;
@@ -116,6 +118,8 @@ export class Game implements GameInterface {
 		this.shot_clock = new Clock();
 		this.siren = false;
 		this.siren_timer = null;
+		this.period = 1;
+		this.match_title = '';
 		this.connection_state = 'idle';
 		this.store = writable(this);
 	}
@@ -129,6 +133,7 @@ export class Game implements GameInterface {
 
 	toggleSiren = () => {
 		this.siren = !this.siren;
+		this.store.set(this);
 		if (this.siren_timer !== null) clearTimeout(this.siren_timer);
 		if (this.siren)
 			this.siren_timer = setTimeout(() => {
@@ -136,5 +141,20 @@ export class Game implements GameInterface {
 					this.toggleSiren();
 				}
 			}, 1000);
+	};
+
+	periodIncrement = () => {
+		this.period++;
+		this.store.set(this);
+	};
+
+	periodDecrement = () => {
+		this.period = Math.min(0, this.period - 1);
+		this.store.set(this);
+	};
+
+	setMatchTitle = (value: string) => {
+		this.match_title = value;
+		this.store.set(this);
 	};
 }

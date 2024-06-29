@@ -35,6 +35,8 @@ export interface GameJSON {
 	shot_clock: ClockJSON;
 
 	siren: boolean;
+
+	period: number;
 }
 
 function uuidv4() {
@@ -133,7 +135,7 @@ export class Team implements TeamInterface {
 	};
 
 	labelSet = (label: string) => {
-		this.api.post(`label/${this.team}/set`, { value: label });
+		this.api.post(`label/${this.team}/teamname/set`, { value: label });
 	};
 	scoreIncrement = () => {
 		this.api.post(`counter/${this.team}/score/increment`);
@@ -165,6 +167,8 @@ export class Game implements GameInterface {
 	game_clock: Clock;
 	shot_clock: Clock;
 	siren: boolean;
+	period: number;
+	match_title: string;
 	connection_state: connectionStateType;
 	ws: ReliableWebSocket<string>;
 	api: BackendAPI;
@@ -177,6 +181,8 @@ export class Game implements GameInterface {
 		this.game_clock = new Clock(this.api, 'gameclock');
 		this.shot_clock = new Clock(this.api, 'shotclock');
 		this.siren = false;
+		this.period = 1;
+		this.match_title = '';
 		this.connection_state = 'idle';
 		this.store = writable(this);
 		const wsUrl = url.replace(/^http/, 'ws');
@@ -199,6 +205,19 @@ export class Game implements GameInterface {
 
 	toggleSiren = () => {
 		this.api.post(`toggle/siren/${this.siren ? 'deactivate' : 'activate'}`);
+	};
+
+	periodIncrement = () => {
+		this.api.post('counter/period/increment');
+	};
+
+	periodDecrement = () => {
+		this.api.post('counter/period/decrement');
+	};
+
+	setMatchTitle = (value: string) => {
+		this.match_title = value;
+		this.store.set(this);
 	};
 
 	onerror = (ev: Event) => {
@@ -230,6 +249,7 @@ export class Game implements GameInterface {
 		this.shot_clock.fromData(data.shot_clock);
 
 		this.siren = data.siren;
+		this.period = data.period;
 
 		this.connection_state = 'good';
 		console.table(data);

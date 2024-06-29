@@ -41,7 +41,12 @@ export interface GameInterface extends Readable<GameInterface> {
 	game_clock: ClockInterface;
 	shot_clock: ClockInterface;
     siren: boolean;
+	period: number;
+	match_title: string;
     connection_state: connectionStateType;
 
 	toggleSiren: () => void;
+	periodIncrement: () => void;
+	periodDecrement: () => void;
+	setMatchTitle: (value: string) => void;
 }

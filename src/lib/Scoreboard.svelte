@@ -9,6 +9,7 @@
 	import { Game as LocalGame } from './backends/local';
 	import { Game, type GameJSON } from './backends/rh_scoreboard_backend';
 	import Siren from './Siren.svelte';
+	import Match from './Match.svelte';
 
 	let game: GameInterface = new LocalGame();
 	let siren: Siren | null = null;
@@ -71,12 +72,21 @@
 		@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Lekton:ital,wght@0,400;0,700;1,400&display=swap');
 	</style>
 	<div class="home">
-		{game.home.label}
+		{$game.home.label}
 		<div class="score">
 			<div class="numbers">{$game.home.score}</div>
 			<Controls>
-				<Control key="s" handler={game.home.scoreDecrement}>-</Control>
-				<Control key="w" handler={game.home.scoreIncrement}>+</Control>
+				<div>
+					<Control key="w" handler={game.home.scoreIncrement}>+</Control>
+					<Control key="s" handler={game.home.scoreDecrement}>-</Control>
+				</div>
+				<Control
+					handler={() => {
+						const value = prompt('Home team name?', $game.home.label);
+						if(value == null) return;
+						game.home.labelSet(value);
+					}}>⌨ Aa</Control
+				>
 			</Controls>
 		</div>
 		<div class="fouls">
@@ -104,12 +114,21 @@
 		</div>
 	</div>
 	<div class="away">
-		{game.away.label}
+		{$game.away.label}
 		<div class="score">
 			<div class="numbers">{$game.away.score}</div>
 			<Controls>
-				<Control key="ArrowDown" desc="↓" handler={game.away.scoreDecrement}>-</Control>
-				<Control key="ArrowUp" desc="↑" handler={game.away.scoreIncrement}>+</Control>
+				<div>
+					<Control key="ArrowUp" desc="↑" handler={game.away.scoreIncrement}>+</Control>
+					<Control key="ArrowDown" desc="↓" handler={game.away.scoreDecrement}>-</Control>
+				</div>
+				<Control
+					handler={() => {
+						const value = prompt('Away team name?', $game.away.label);
+						if(value == null) return;
+						game.away.labelSet(value);
+					}}>⌨ Aa</Control
+				>
 			</Controls>
 		</div>
 		<div class="fouls">
@@ -139,13 +158,7 @@
 	<div class="game_clock">
 		<div class="numbers">
 			<Clock clock={game.game_clock} toggleKey="Space" siren={null}>
-				<Control
-					slot="pre"
-					key="h"
-					handler={ game.toggleSiren }
-				>
-					Horn
-				</Control>
+				<Control slot="pre" key="h" handler={game.toggleSiren}>Horn</Control>
 				<Siren {audio} bind:this={siren} {game} />
 				<Siren {audio} frequencies={[560, 1500]} bind:this={horn} />
 				<div>
@@ -231,6 +244,9 @@
 			</Clock>
 		</div>
 	</div>
+	<div class="match_info">
+		<Match {game} />
+	</div>
 	<div class="shot_clock">
 		<div class="numbers">
 			<Clock clock={game.shot_clock} toggleKey=",">
@@ -294,7 +310,7 @@
 		height: 84cqh;
 	}
 	.fouls {
-	 	margin-top: 6cqh;
+		margin-top: 6cqh;
 		container-type: size;
 		height: 48cqh;
 		color: yellow;
@@ -340,6 +356,17 @@
 		left: 27.5cqw;
 		width: 44cqw;
 		height: 32cqh;
+		text-align: center;
+		border: solid #222 1cqh;
+		border-radius: 2cqh;
+		container-type: size;
+	}
+	.match_info {
+		position: absolute;
+		top: 37cqh;
+		left: 27.5cqw;
+		width: 44cqw;
+		height: 15cqh;
 		text-align: center;
 		border: solid #222 1cqh;
 		border-radius: 2cqh;
