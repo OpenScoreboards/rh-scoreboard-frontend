@@ -9,6 +9,7 @@
 	// export let formats: string[] = ['1:00', '10', '0.0'];
 	export let clock: ClockInterface;
 	export let toggleKey = '';
+	export let persistAfterZeroMs: number | null = null;
 	export let siren: Siren | null | undefined = undefined;
 
 	let sirenMs = 1000;
@@ -75,6 +76,9 @@
 			if (prev_ms > 0 && remaining_ms == 0 && prev_running) {
 				if (siren) siren.beep(sirenMs);
 				// console.table({ prev_ms, remaining_ms, prev_running });
+			}
+			if (persistAfterZeroMs !== null && remaining_ms == 0 && ms > $clock.last_state_change + persistAfterZeroMs) {
+				disp = '';
 			}
 			prev_ms = remaining_ms;
 			prev_running = running;

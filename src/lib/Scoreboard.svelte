@@ -13,7 +13,8 @@
 
 	export let config: Config = {
 		readonly: false,
-		mute: false
+		mute: false,
+		borders: false
 	};
 	let game: GameInterface = new LocalGame();
 	let siren: Siren | null = null;
@@ -236,7 +237,7 @@
 				<div>
 					<Control
 						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
+							// if ($game.game_clock.state == 'Running') return;
 							game.game_clock.adjust(minuteMs);
 						}}
 					>
@@ -244,7 +245,7 @@
 					</Control>
 					<Control
 						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
+							// if ($game.game_clock.state == 'Running') return;
 							game.game_clock.adjust(-minuteMs);
 						}}
 					>
@@ -254,7 +255,7 @@
 				<div>
 					<Control
 						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
+							// if ($game.game_clock.state == 'Running') return;
 							game.game_clock.adjust(10 * secondMs);
 						}}
 					>
@@ -262,7 +263,7 @@
 					</Control>
 					<Control
 						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
+							// if ($game.game_clock.state == 'Running') return;
 							game.game_clock.adjust(-10 * secondMs);
 						}}
 					>
@@ -272,7 +273,7 @@
 				<div>
 					<Control
 						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
+							// if ($game.game_clock.state == 'Running') return;
 							game.game_clock.adjust(secondMs);
 						}}
 					>
@@ -280,7 +281,7 @@
 					</Control>
 					<Control
 						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
+							// if ($game.game_clock.state == 'Running') return;
 							game.game_clock.adjust(-secondMs);
 						}}
 					>
@@ -292,6 +293,71 @@
 	</div>
 	<div class="match_info">
 		<Match {game} />
+	</div>
+	<div class="stoppage_clock">
+		<div class="numbers">
+			<Clock clock={game.stoppage_clock} persistAfterZeroMs={10 * secondMs} siren={null}>
+				<div>
+					<Control
+						handler={() => {
+							game.stoppage_clock.set(minuteMs);
+						}}
+					>
+						1m
+					</Control>
+					<Control
+						handler={() => {
+							game.stoppage_clock.set(30 * secondMs);
+						}}
+					>
+						30s
+					</Control>
+					<Control
+						handler={() => {
+							game.stoppage_clock.set(0);
+						}}
+					>
+						0m
+					</Control>
+				</div>
+				<div>
+					<Control
+						handler={() => {
+							// if ($game.stoppage_clock.state == 'Running') return;
+							game.stoppage_clock.adjust(minuteMs);
+						}}
+					>
+						+1m
+					</Control>
+					<Control
+						handler={() => {
+							// if ($game.stoppage_clock.state == 'Running') return;
+							game.stoppage_clock.adjust(-minuteMs);
+						}}
+					>
+						-1m
+					</Control>
+				</div>
+				<div>
+					<Control
+						handler={() => {
+							// if ($game.stoppage_clock.state == 'Running') return;
+							game.stoppage_clock.adjust(10 * secondMs);
+						}}
+					>
+						+10s
+					</Control>
+					<Control
+						handler={() => {
+							// if ($game.stoppage_clock.state == 'Running') return;
+							game.stoppage_clock.adjust(-10 * secondMs);
+						}}
+					>
+						-10s
+					</Control>
+				</div>
+			</Clock>
+		</div>
 	</div>
 	<div class="shot_clock">
 		<div class="numbers">
@@ -353,6 +419,7 @@
 	}
 	main.borders .game_clock,
 	main.borders .shot_clock,
+	main.borders .stoppage_clock,
 	main.borders .match_info,
 	main.borders .home,
 	main.borders .away {
@@ -405,10 +472,10 @@
 	}
 	.game_clock {
 		position: absolute;
-		top: 2cqh;
+		top: 20cqh;
 		left: 27.5cqw;
 		width: 44cqw;
-		height: 32cqh;
+		height: 28cqh;
 		text-align: center;
 		border: solid transparent 1cqh;
 		border-radius: 2cqh;
@@ -416,7 +483,7 @@
 	}
 	.match_info {
 		position: absolute;
-		top: 37cqh;
+		top: 2cqh;
 		left: 27.5cqw;
 		width: 44cqw;
 		height: 15cqh;
@@ -425,12 +492,24 @@
 		border-radius: 2cqh;
 		container-type: size;
 	}
+	.stoppage_clock {
+		position: absolute;
+		top: 51cqh;
+		left: 32cqw;
+		width: 36cqw;
+		height: 21cqh;
+		text-align: center;
+		border: solid transparent 1cqh;
+		border-radius: 2cqh;
+		container-type: size;
+		color: blue;
+	}
 	.shot_clock {
 		position: absolute;
 		top: 75cqh;
 		left: 32cqw;
 		width: 36cqw;
-		height: 22cqh;
+		height: 21cqh;
 		text-align: center;
 		border: solid transparent 1cqh;
 		border-radius: 2cqh;

@@ -16,7 +16,7 @@ export interface ClockInterface extends Readable<ClockInterface> {
 	last_time_remaining: number;
 	state: 'Running' | 'Stopped';
 
-	start: () => void;
+	start: (value?: number) => void;
 	stop: () => void;
 	set: (value: number) => void;
 	adjust: (value: number) => void;
@@ -46,6 +46,7 @@ export interface GameInterface extends Readable<GameInterface> {
 	away: TeamInterface;
 	game_clock: ClockInterface;
 	shot_clock: ClockInterface;
+	stoppage_clock: ClockInterface;
 	siren: boolean;
 	period: number;
 	match_title: string;

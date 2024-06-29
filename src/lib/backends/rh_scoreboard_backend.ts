@@ -33,6 +33,7 @@ export interface GameJSON {
 
 	game_clock: ClockJSON;
 	shot_clock: ClockJSON;
+	stoppage_clock: ClockJSON;
 
 	siren: boolean;
 
@@ -68,10 +69,10 @@ export class Clock implements ClockInterface {
 	last_time_remaining: number;
 	state: 'Running' | 'Stopped';
 	api: BackendAPI;
-	name: 'gameclock' | 'shotclock';
+	name: 'gameclock' | 'shotclock' | 'stoppageclock';
 	store: Writable<ClockInterface>;
 
-	constructor(api: BackendAPI, name: 'gameclock' | 'shotclock') {
+	constructor(api: BackendAPI, name: 'gameclock' | 'shotclock' | 'stoppageclock') {
 		this.last_state_change = 0;
 		this.last_time_remaining = 0;
 		this.state = 'Stopped';
@@ -87,25 +88,35 @@ export class Clock implements ClockInterface {
 		return this.store.subscribe(run, invalidate);
 	};
 
-	fromData(data: ClockJSON) {
+	fromData = (data: ClockJSON) => {
 		this.last_state_change = data.last_state_change;
 		this.last_time_remaining = data.last_time_remaining;
 		this.state = data.state;
 		this.store.set(this);
-	}
+	};
 
-	start() {
-		this.api.post(`clock/${this.name}/start`);
-	}
-	stop() {
+	start = (value?: number) => {
+		if (typeof value == 'undefined') {
+			this.api.post(`clock/${this.name}/start`);
+		} else {
+			this.api.post(`clock/${this.name}/start`, { value: `${value}` });
+		}
+	};
+	stop = () => {
 		this.api.post(`clock/${this.name}/stop`);
-	}
-	set(value: number) {
+	};
+	set = (value: number) => {
 		this.api.post(`clock/${this.name}/set`, { value: `${value}` });
-	}
-	adjust(value: number) {
-		this.api.post(`clock/${this.name}/set`, { value: `${this.last_time_remaining + value}` });
-	}
+	};
+	adjust = (value: number) => {
+		if (this.state == 'Running') {
+			this.api.post(`clock/${this.name}/${value > 0 ? 'increment' : 'decrement'}`, {
+				value: `${Math.abs(value)}`
+			});
+		} else {
+			this.api.post(`clock/${this.name}/set`, { value: `${this.last_time_remaining + value}` });
+		}
+	};
 }
 
 export class Team implements TeamInterface {
@@ -168,6 +179,7 @@ export class Game implements GameInterface {
 	away: Team;
 	game_clock: Clock;
 	shot_clock: Clock;
+	stoppage_clock: Clock;
 	siren: boolean;
 	period: number;
 	match_title: string;
@@ -182,6 +194,7 @@ export class Game implements GameInterface {
 		this.away = new Team(this.api, 'away');
 		this.game_clock = new Clock(this.api, 'gameclock');
 		this.shot_clock = new Clock(this.api, 'shotclock');
+		this.stoppage_clock = new Clock(this.api, 'stoppageclock');
 		this.siren = false;
 		this.period = 1;
 		this.match_title = '';
@@ -248,6 +261,7 @@ export class Game implements GameInterface {
 
 		this.game_clock.fromData(data.game_clock);
 		this.shot_clock.fromData(data.shot_clock);
+		this.stoppage_clock.fromData(data.stoppage_clock);
 
 		this.siren = data.siren;
 		this.period = data.period;

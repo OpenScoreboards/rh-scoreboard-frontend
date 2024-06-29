@@ -75,9 +75,10 @@ class Clock implements ClockInterface {
 		return this.store.subscribe(run, invalidate);
 	};
 
-	start = () => {
+	start = (value?: number) => {
 		if (this.state == 'Running') return;
 		this.last_state_change = Date.now();
+		if (typeof value !== 'undefined') this.last_time_remaining = value;
 		this.state = 'Running';
 		this.store.set(this);
 	};
@@ -104,6 +105,7 @@ export class Game implements GameInterface {
 	away: Team;
 	game_clock: Clock;
 	shot_clock: Clock;
+	stoppage_clock: Clock;
 	siren: boolean;
 	period: number;
 	match_title: string;
@@ -116,6 +118,7 @@ export class Game implements GameInterface {
 		this.away = new Team('Away');
 		this.game_clock = new Clock();
 		this.shot_clock = new Clock();
+		this.stoppage_clock = new Clock();
 		this.siren = false;
 		this.siren_timer = null;
 		this.period = 1;
