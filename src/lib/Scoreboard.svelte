@@ -10,6 +10,8 @@
 	import { Game, type GameJSON } from './backends/rh_scoreboard_backend';
 	import Siren from './Siren.svelte';
 	import Match from './Match.svelte';
+	import Module from './Module.svelte';
+	import TowerButton from './TowerButton.svelte';
 
 	export let config: Config = {
 		readonly: false,
@@ -118,9 +120,9 @@
 		/* @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap'); */
 		@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Lekton:ital,wght@0,400;0,700;1,400&display=swap');
 	</style>
-	<div class="home">
-		{$game.home.label}
-		<div class="score">
+	<div class="home score">
+		<Module label="Home score">
+			{$game.home.label}
 			<div class="numbers">{$game.home.score}</div>
 			<Controls>
 				<div>
@@ -135,8 +137,10 @@
 					}}>⌨ Aa</Control
 				>
 			</Controls>
-		</div>
-		<div class="fouls">
+		</Module>
+	</div>
+	<div class="home fouls">
+		<Module label="Home team fouls">
 			<div class="numbers">
 				{$game.home.team_fouls}
 			</div>
@@ -144,25 +148,19 @@
 				<Control key="a" handler={game.home.foulsDecrement}>-</Control>
 				<Control key="d" handler={game.home.foulsIncrement}>+</Control>
 			</Controls>
-		</div>
-		<div class="tower">
-			<button
-				on:click={$game.home.toggleFouls}
-				class={`foul ${$game.home.foul_warning ? 'flash' : 'inactive'}`}
-			>
-				F
-			</button>
-			<button
-				on:click={$game.home.toggleTimeout}
-				class={`timeout ${$game.home.timeout_requested ? 'flash' : 'inactive'}`}
-			>
-				T
-			</button>
-		</div>
+		</Module>
 	</div>
-	<div class="away">
-		{$game.away.label}
-		<div class="score">
+	<div class="home tower">
+		<Module label="Home tower">
+			<div>
+				<TowerButton team={$game.home} control="fouls" />
+				<TowerButton team={$game.home} control="timeout" />
+			</div>
+		</Module>
+	</div>
+	<div class="away score">
+		<Module label="Away score">
+			{$game.away.label}
 			<div class="numbers">{$game.away.score}</div>
 			<Controls>
 				<div>
@@ -177,8 +175,10 @@
 					}}>⌨ Aa</Control
 				>
 			</Controls>
-		</div>
-		<div class="fouls">
+		</Module>
+	</div>
+	<div class="away fouls">
+		<Module label="Away team fouls">
 			<div class="numbers">
 				{$game.away.team_fouls}
 			</div>
@@ -186,192 +186,195 @@
 				<Control key="ArrowLeft" desc="←" handler={game.away.foulsDecrement}>-</Control>
 				<Control key="ArrowRight" desc="→" handler={game.away.foulsIncrement}>+</Control>
 			</Controls>
-		</div>
-		<div class="tower">
-			<button
-				on:click={$game.away.toggleFouls}
-				class={`foul ${$game.away.foul_warning ? 'flash' : 'inactive'}`}
-			>
-				F
-			</button>
-			<button
-				on:click={$game.away.toggleTimeout}
-				class={`timeout ${$game.away.timeout_requested ? 'flash' : 'inactive'}`}
-			>
-				T
-			</button>
-		</div>
+		</Module>
 	</div>
-	<div class="game_clock">
-		<div class="numbers">
-			<Clock clock={game.game_clock} toggleKey="Space" siren={null}>
-				<Control slot="pre" key="h" handler={game.toggleSiren}>Horn</Control>
-				<Siren {audio} bind:this={siren} {game} />
-				<Siren {audio} frequencies={[560, 1500]} bind:this={horn} />
-				<div>
-					<Control
-						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
-							game.game_clock.set(25 * minuteMs);
-						}}
-					>
-						25m
-					</Control>
-					<Control
-						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
-							game.game_clock.set(20 * minuteMs);
-						}}
-					>
-						20m
-					</Control>
-					<Control
-						handler={() => {
-							if ($game.game_clock.state == 'Running') return;
-							game.game_clock.set(0);
-						}}
-					>
-						0m
-					</Control>
-				</div>
-				<div>
-					<Control
-						handler={() => {
-							// if ($game.game_clock.state == 'Running') return;
-							game.game_clock.adjust(minuteMs);
-						}}
-					>
-						+1m
-					</Control>
-					<Control
-						handler={() => {
-							// if ($game.game_clock.state == 'Running') return;
-							game.game_clock.adjust(-minuteMs);
-						}}
-					>
-						-1m
-					</Control>
-				</div>
-				<div>
-					<Control
-						handler={() => {
-							// if ($game.game_clock.state == 'Running') return;
-							game.game_clock.adjust(10 * secondMs);
-						}}
-					>
-						+10s
-					</Control>
-					<Control
-						handler={() => {
-							// if ($game.game_clock.state == 'Running') return;
-							game.game_clock.adjust(-10 * secondMs);
-						}}
-					>
-						-10s
-					</Control>
-				</div>
-				<div>
-					<Control
-						handler={() => {
-							// if ($game.game_clock.state == 'Running') return;
-							game.game_clock.adjust(secondMs);
-						}}
-					>
-						+1s
-					</Control>
-					<Control
-						handler={() => {
-							// if ($game.game_clock.state == 'Running') return;
-							game.game_clock.adjust(-secondMs);
-						}}
-					>
-						-1s
-					</Control>
-				</div>
-			</Clock>
-		</div>
+	<div class="away tower">
+		<Module label="Away tower">
+			<div>
+				<TowerButton team={$game.away} control="fouls" />
+				<TowerButton team={$game.away} control="timeout" />
+			</div>
+		</Module>
 	</div>
-	<div class="match_info">
-		<Match {game} />
+	<div class="match game_clock">
+		<Module label="Game clock">
+			<div class="numbers">
+				<Clock clock={game.game_clock} toggleKey="Space" siren={null}>
+					<Control slot="pre" key="h" handler={game.toggleSiren}>Horn</Control>
+					<Siren {audio} bind:this={siren} {game} />
+					<Siren {audio} frequencies={[560, 1500]} bind:this={horn} />
+					<div>
+						<Control
+							handler={() => {
+								if ($game.game_clock.state == 'Running') return;
+								game.game_clock.set(25 * minuteMs);
+							}}
+						>
+							25m
+						</Control>
+						<Control
+							handler={() => {
+								if ($game.game_clock.state == 'Running') return;
+								game.game_clock.set(20 * minuteMs);
+							}}
+						>
+							20m
+						</Control>
+						<Control
+							handler={() => {
+								if ($game.game_clock.state == 'Running') return;
+								game.game_clock.set(0);
+							}}
+						>
+							0m
+						</Control>
+					</div>
+					<div>
+						<Control
+							handler={() => {
+								// if ($game.game_clock.state == 'Running') return;
+								game.game_clock.adjust(minuteMs);
+							}}
+						>
+							+1m
+						</Control>
+						<Control
+							handler={() => {
+								// if ($game.game_clock.state == 'Running') return;
+								game.game_clock.adjust(-minuteMs);
+							}}
+						>
+							-1m
+						</Control>
+					</div>
+					<div>
+						<Control
+							handler={() => {
+								// if ($game.game_clock.state == 'Running') return;
+								game.game_clock.adjust(10 * secondMs);
+							}}
+						>
+							+10s
+						</Control>
+						<Control
+							handler={() => {
+								// if ($game.game_clock.state == 'Running') return;
+								game.game_clock.adjust(-10 * secondMs);
+							}}
+						>
+							-10s
+						</Control>
+					</div>
+					<div>
+						<Control
+							handler={() => {
+								// if ($game.game_clock.state == 'Running') return;
+								game.game_clock.adjust(secondMs);
+							}}
+						>
+							+1s
+						</Control>
+						<Control
+							handler={() => {
+								// if ($game.game_clock.state == 'Running') return;
+								game.game_clock.adjust(-secondMs);
+							}}
+						>
+							-1s
+						</Control>
+					</div>
+				</Clock>
+			</div>
+		</Module>
 	</div>
-	<div class="stoppage_clock">
-		<div class="numbers">
-			<Clock clock={game.stoppage_clock} persistAfterZeroMs={10 * secondMs} siren={null}>
-				<div>
-					<Control
-						handler={() => {
-							game.stoppage_clock.set(minuteMs);
-						}}
-					>
-						1m
-					</Control>
-					<Control
-						handler={() => {
-							game.stoppage_clock.set(30 * secondMs);
-						}}
-					>
-						30s
-					</Control>
-					<Control
-						handler={() => {
-							game.stoppage_clock.set(0);
-						}}
-					>
-						0m
-					</Control>
-				</div>
-				<div>
-					<Control
-						handler={() => {
-							// if ($game.stoppage_clock.state == 'Running') return;
-							game.stoppage_clock.adjust(minuteMs);
-						}}
-					>
-						+1m
-					</Control>
-					<Control
-						handler={() => {
-							// if ($game.stoppage_clock.state == 'Running') return;
-							game.stoppage_clock.adjust(-minuteMs);
-						}}
-					>
-						-1m
-					</Control>
-				</div>
-				<div>
-					<Control
-						handler={() => {
-							// if ($game.stoppage_clock.state == 'Running') return;
-							game.stoppage_clock.adjust(10 * secondMs);
-						}}
-					>
-						+10s
-					</Control>
-					<Control
-						handler={() => {
-							// if ($game.stoppage_clock.state == 'Running') return;
-							game.stoppage_clock.adjust(-10 * secondMs);
-						}}
-					>
-						-10s
-					</Control>
-				</div>
-			</Clock>
-		</div>
+
+	<div class="match match_info">
+		<Module label="Match info">
+			<Match {game} />
+		</Module>
 	</div>
-	<div class="shot_clock">
-		<div class="numbers">
-			<Clock clock={game.shot_clock} toggleKey=",">
-				<Control
-					key="."
-					handler={() => {
-						game.shot_clock.set(45 * secondMs);
-					}}
-				>
-					45s
-				</Control>
-			</Clock>
-		</div>
+	<div class="match stoppage_clock">
+		<Module label="Stoppage clock">
+			<div class="numbers">
+				<Clock clock={game.stoppage_clock} persistAfterZeroMs={10 * secondMs} siren={null}>
+					<div>
+						<Control
+							handler={() => {
+								game.stoppage_clock.set(minuteMs);
+							}}
+						>
+							60s
+						</Control>
+						<Control
+							handler={() => {
+								game.stoppage_clock.set(30 * secondMs);
+							}}
+						>
+							30s
+						</Control>
+						<Control
+							handler={() => {
+								game.stoppage_clock.set(0);
+							}}
+						>
+							0s
+						</Control>
+					</div>
+					<div>
+						<Control
+							handler={() => {
+								// if ($game.stoppage_clock.state == 'Running') return;
+								game.stoppage_clock.adjust(minuteMs);
+							}}
+						>
+							+1m
+						</Control>
+						<Control
+							handler={() => {
+								// if ($game.stoppage_clock.state == 'Running') return;
+								game.stoppage_clock.adjust(-minuteMs);
+							}}
+						>
+							-1m
+						</Control>
+					</div>
+					<div>
+						<Control
+							handler={() => {
+								// if ($game.stoppage_clock.state == 'Running') return;
+								game.stoppage_clock.adjust(10 * secondMs);
+							}}
+						>
+							+10s
+						</Control>
+						<Control
+							handler={() => {
+								// if ($game.stoppage_clock.state == 'Running') return;
+								game.stoppage_clock.adjust(-10 * secondMs);
+							}}
+						>
+							-10s
+						</Control>
+					</div>
+				</Clock>
+			</div>
+		</Module>
+	</div>
+	<div class="match shot_clock">
+		<Module label="Shot clock">
+			<div class="numbers">
+				<Clock clock={game.shot_clock} toggleKey=",">
+					<Control
+						key="."
+						handler={() => {
+							game.shot_clock.set(45 * secondMs);
+						}}
+					>
+						45s
+					</Control>
+				</Clock>
+			</div>
+		</Module>
 	</div>
 	<div class="status">
 		<ConnectionStatus status={$game.connection_state} />
@@ -379,11 +382,6 @@
 </main>
 
 <style>
-	@keyframes blinker {
-		50% {
-			opacity: 0.33;
-		}
-	}
 	main {
 		position: relative;
 		background-color: black;
@@ -405,115 +403,70 @@
 		font-size: 2cqh;
 		container-type: size;
 	}
+	.match {
+		position: absolute;
+		left: 27cqw;
+		width: 46cqw;
+		text-align: center;
+		container-type: size;
+	}
 	.home,
 	.away {
 		position: absolute;
-		width: 24cqw;
-		height: 44cqh;
+		width: 26cqw;
 		text-align: center;
 		font-size: min(8cqh, 3cqw);
 		border: solid transparent 1cqh;
 		border-radius: 2cqh;
-		top: 2cqh;
 		container-type: size;
 	}
-	main.borders .game_clock,
-	main.borders .shot_clock,
-	main.borders .stoppage_clock,
-	main.borders .match_info,
-	main.borders .home,
-	main.borders .away {
-		border-color: #222;
+	.home {
+		left: 0cqw;
+	}
+	.away {
+		right: 0cqw;
 	}
 	.score {
-		container-type: size;
-		height: 84cqh;
+		top: 1cqh;
+		height: 38cqh;
 	}
 	.fouls {
-		margin-top: 6cqh;
-		container-type: size;
-		height: 48cqh;
+		top: 40cqh;
+		height: 28cqh;
 		color: yellow;
 	}
 	.tower {
-		height: 44cqh;
+		top: 69cqh;
+		height: 29cqh;
 		font-size: 35cqh;
 	}
-	.tower .foul,
-	.tower .timeout {
-		border: none;
-		height: 44cqh;
-		font-size: 35cqh;
-		display: inline-block;
-		width: 1em;
-		height: 1em;
-		line-height: 1em;
-		border-radius: 2cqh;
-		color: white;
-		cursor: pointer;
-	}
-	.tower .inactive {
-		opacity: 0.1;
-	}
-	.tower .flash {
-		animation: blinker 1s ease-in-out infinite;
-	}
-	.tower .foul {
-		background: red;
-	}
-	.tower .timeout {
-		background: green;
-	}
-	.home {
-		left: 1.5cqw;
-	}
-	.away {
-		right: 1.5cqw;
-	}
-	.game_clock {
-		position: absolute;
-		top: 20cqh;
-		left: 27.5cqw;
-		width: 44cqw;
-		height: 28cqh;
-		text-align: center;
-		border: solid transparent 1cqh;
-		border-radius: 2cqh;
-		container-type: size;
+	.tower div {
+		width: 100cqw;
+		height: 100cqh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.match_info {
-		position: absolute;
 		top: 2cqh;
-		left: 27.5cqw;
-		width: 44cqw;
-		height: 15cqh;
-		text-align: center;
-		border: solid transparent 1cqh;
-		border-radius: 2cqh;
-		container-type: size;
-	}
-	.stoppage_clock {
-		position: absolute;
-		top: 51cqh;
-		left: 32cqw;
-		width: 36cqw;
 		height: 21cqh;
 		text-align: center;
-		border: solid transparent 1cqh;
-		border-radius: 2cqh;
-		container-type: size;
+	}
+	.game_clock {
+		top: 24cqh;
+		height: 27cqh;
+		text-align: center;
+	}
+	.stoppage_clock {
+		top: 52cqh;
+		height: 23cqh;
+		text-align: center;
 		color: blue;
 	}
 	.shot_clock {
-		position: absolute;
-		top: 75cqh;
-		left: 32cqw;
-		width: 36cqw;
-		height: 21cqh;
+		top: 76cqh;
+		height: 23cqh;
 		text-align: center;
-		border: solid transparent 1cqh;
-		border-radius: 2cqh;
-		container-type: size;
 		color: red;
 	}
 	.numbers {

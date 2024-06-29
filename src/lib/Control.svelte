@@ -11,7 +11,13 @@
 	const hotkeyAdd: CallableFunction = getContext('hotkeyAdd');
 	const config: Writable<Config> = getContext('config');
 
-	$: !$config.readonly && key && handler !== null && hotkeyAdd(key, handler);
+	$: !$config.readonly &&
+		key &&
+		handler !== null &&
+		hotkeyAdd(key, (ev: UIEvent & { currentTarget: EventTarget & HTMLButtonElement }) => {
+			if ($config.readonly || typeof handler == 'undefined') return;
+			return handler(ev);
+		});
 </script>
 
 <button class="control" data-hotkey={key} on:click={handler}>

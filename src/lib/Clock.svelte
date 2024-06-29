@@ -105,7 +105,6 @@
 	}
 </script>
 
-<!-- <div class="clock">{disp}</div> -->
 {disp}
 <Controls>
 	{#if siren !== null}

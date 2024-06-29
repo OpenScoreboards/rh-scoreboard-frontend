@@ -31,8 +31,8 @@
 </div>
 <Controls>
 	<div>
-		<Control handler={game.periodIncrement}>+</Control>
-		<Control handler={game.periodDecrement}>-</Control>
+		<Control handler={game.periodIncrement}>+ Period</Control>
+		<Control handler={game.periodDecrement}>- Period</Control>
 	</div>
 	<Control
 		handler={() => {
@@ -40,7 +40,7 @@
 			game.setMatchTitle(value || '');
 		}}>⌨ Aa</Control
 	>
-	<Control handler={game.reset}>⚠ CLEAR ALL</Control>
+	<Control handler={game.reset}>⚠ RESET</Control>
 </Controls>
 
 <style>
