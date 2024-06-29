@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { getContext, onMount, tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import Control from './Control.svelte';
 	import Controls from './Controls.svelte';
-	import type { ClockInterface, GameInterface } from './types';
+	import type { ClockInterface } from './types';
 	import Siren from './Siren.svelte';
 	// import { minuteMs, secondMs } from './types';
 
