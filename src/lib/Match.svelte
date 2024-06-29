@@ -42,10 +42,14 @@
 	>
 	<Control
 		handler={() => {
-			const value = prompt('Reset match?\n\nThe scoreboard will be cleared!\n\nType "yes" to confirm.', '');
+			const value = prompt(
+				'Reset match?\n\nThe scoreboard will be cleared!\n\nType "yes" to confirm.',
+				''
+			);
 			if ((value || '').toLowerCase() == 'yes') game.reset();
 		}}>⚠ RESET</Control
 	>
+	<slot />
 </Controls>
 
 <style>

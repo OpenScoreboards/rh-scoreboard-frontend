@@ -318,7 +318,20 @@
 
 	<div class="match match_info">
 		<Module label="Match info">
-			<Match {game} />
+			<Match {game}>
+				<Control
+					handler={() => {
+						if (document.fullscreenElement) {
+							document.exitFullscreen();
+							return;
+						}
+						if (main == null) return;
+						main.requestFullscreen();
+					}}
+				>
+					⛶ Fullscreen
+				</Control>
+			</Match>
 		</Module>
 	</div>
 	<div class="match stoppage_clock">
