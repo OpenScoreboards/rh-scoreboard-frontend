@@ -44,9 +44,9 @@
 		transition: opacity 0.2s;
 		opacity: 0.1;
 	}
-	:global(main:not([data-display='interactive'])) div:not(:hover) {
+	div:not(:hover) {
 		transition: opacity 0.2s;
-		opacity: 0;
+		opacity: 0.9;
 	}
 	div[data-class='controls']:hover :global(button):hover {
 		transition: opacity 0.2s;

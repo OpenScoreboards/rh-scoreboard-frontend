@@ -8,6 +8,7 @@ export const minuteMs = 60000;
 export interface Config {
 	readonly: boolean;
 	mute: boolean;
+	borders: boolean;
 }
 
 export interface ClockInterface extends Readable<ClockInterface> {

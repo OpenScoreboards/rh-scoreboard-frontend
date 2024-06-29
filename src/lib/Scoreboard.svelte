@@ -44,15 +44,18 @@
 		const defaults: Record<string, Config> = {
 			readonly: {
 				readonly: true,
-				mute: true
+				mute: true,
+				borders: false
 			},
 			bench: {
 				readonly: false,
-				mute: false
+				mute: false,
+				borders: true
 			},
 			tv: {
 				readonly: true,
-				mute: false
+				mute: false,
+				borders: false
 			}
 		};
 		if (Object.hasOwn(defaults, preset)) {
@@ -73,6 +76,8 @@
 		setAttr('data-display', preset);
 		setAttr('data-readonly', config.readonly ? '' : null);
 		setAttr('data-mute', config.mute ? '' : null);
+		setAttr('data-borders', config.borders ? '' : null);
+		setAttr('data-interactive', config.readonly ? '' : null);
 		audio = new AudioContext();
 		game = new Game(`${location.protocol}//${location.hostname}:8000/`);
 		return () => {};
@@ -106,7 +111,7 @@
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <svelte:document class="scoreboard" on:click={resumeAudio} on:keypress={resumeAudio} />
 
-<main bind:this={main}>
+<main bind:this={main} class={`${config.borders ? 'borders' : ''}`}>
 	<style>
 		@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..700;1,100..700&display=swap');
 		/* @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap'); */
@@ -341,10 +346,17 @@
 		height: 44cqh;
 		text-align: center;
 		font-size: min(8cqh, 3cqw);
-		border: solid #222 1cqh;
+		border: solid transparent 1cqh;
 		border-radius: 2cqh;
 		top: 2cqh;
 		container-type: size;
+	}
+	main.borders .game_clock,
+	main.borders .shot_clock,
+	main.borders .match_info,
+	main.borders .home,
+	main.borders .away {
+		border-color: #222;
 	}
 	.score {
 		container-type: size;
@@ -398,7 +410,7 @@
 		width: 44cqw;
 		height: 32cqh;
 		text-align: center;
-		border: solid #222 1cqh;
+		border: solid transparent 1cqh;
 		border-radius: 2cqh;
 		container-type: size;
 	}
@@ -409,7 +421,7 @@
 		width: 44cqw;
 		height: 15cqh;
 		text-align: center;
-		border: solid #222 1cqh;
+		border: solid transparent 1cqh;
 		border-radius: 2cqh;
 		container-type: size;
 	}
@@ -420,7 +432,7 @@
 		width: 36cqw;
 		height: 22cqh;
 		text-align: center;
-		border: solid #222 1cqh;
+		border: solid transparent 1cqh;
 		border-radius: 2cqh;
 		container-type: size;
 		color: red;

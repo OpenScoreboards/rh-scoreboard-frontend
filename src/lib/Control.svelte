@@ -11,8 +11,7 @@
 	const hotkeyAdd: CallableFunction = getContext('hotkeyAdd');
 	const config: Writable<Config> = getContext('config');
 
-	$: (!$config.readonly) && key && handler !== null && hotkeyAdd(key, handler);
-
+	$: !$config.readonly && key && handler !== null && hotkeyAdd(key, handler);
 </script>
 
 <button class="control" data-hotkey={key} on:click={handler}>
@@ -23,7 +22,7 @@
 </button>
 
 <style>
-	:global(main:not([data-display='interactive'])) button {
+	:global(main[data-readonly]) button {
 		opacity: 0;
 	}
 	:global(div[data-class='controls']:hover) {
@@ -32,9 +31,7 @@
 	:global(div[data-class='controls']:hover) button {
 		opacity: 0.5;
 	}
-	:global(main:not([data-display='interactive']))
-		:global(div[data-class='controls']:not(+ :hover))
-		button {
+	:global(main[data-readonly]) :global(div[data-class='controls']:not(+ :hover)) button {
 		pointer-events: none;
 	}
 	kbd {
