@@ -7,17 +7,12 @@
 	export let key: string = '';
 	export let desc: string | undefined = undefined;
 	export let handler: UIEventHandler<HTMLButtonElement> | undefined;
+	export let handlerRelease: UIEventHandler<HTMLButtonElement> | undefined = undefined;
 
 	const hotkeyAdd: CallableFunction = getContext('hotkeyAdd');
 	const config: Writable<Config> = getContext('config');
 
-	$: !$config.readonly &&
-		key &&
-		handler !== null &&
-		hotkeyAdd(key, (ev: UIEvent & { currentTarget: EventTarget & HTMLButtonElement }) => {
-			if ($config.readonly || typeof handler == 'undefined') return;
-			return handler(ev);
-		});
+	$: key && handler !== null && hotkeyAdd(key, handler, handlerRelease);
 </script>
 
 <button class="control" data-hotkey={key} on:click={handler}>

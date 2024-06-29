@@ -20,7 +20,6 @@
 	};
 	let game: GameInterface = new LocalGame();
 	let siren: Siren | null = null;
-	let horn: Siren | null = null;
 	let main: HTMLElement | null = null;
 
 	// context stores
@@ -87,14 +86,18 @@
 	});
 
 	const hotkeys: Map<string | number, { (): void }> = new Map();
-	function hotkeyAdd(key: string | number, handler: { (): void }) {
+	const hotkeysRelease: Map<string | number, { (): void }> = new Map();
+	function hotkeyAdd(key: string | number, handler: { (): void }, handlerRelease?: { (): void }) {
 		hotkeys.set(key, handler);
+		if (typeof handlerRelease !== 'undefined') {
+			hotkeysRelease.set(key, handlerRelease);
+		}
 	}
 	setContext('hotkeyAdd', hotkeyAdd);
 
 	let focused = false;
 	function keydown(ev: KeyboardEvent) {
-		if (focused) return;
+		if (focused || config.readonly) return;
 		if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
 		for (const key of [ev.key, ev.code]) {
 			const handler = hotkeys.get(key);
@@ -104,12 +107,30 @@
 			}
 		}
 	}
+	function keyup(ev: KeyboardEvent) {
+		if (focused || config.readonly) return;
+		if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+		for (const key of [ev.key, ev.code]) {
+			const handler = hotkeysRelease.get(key);
+			if (typeof handler !== 'undefined') {
+				ev.preventDefault();
+				return handler();
+			}
+		}
+	}
 	function focus(ev: FocusEvent) {
 		focused = document.activeElement?.tagName == 'input';
 	}
+
+	function hornActivate() {
+		if (!$game.siren) game.toggleSiren();
+	}
+	function hornDeativate() {
+		if ($game.siren) game.toggleSiren();
+	}
 </script>
 
-<svelte:window on:keydown={keydown} on:focus={focus} />
+<svelte:window on:keydown={keydown} on:keyup={keyup} on:focus={focus} />
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <svelte:document class="scoreboard" on:click={resumeAudio} on:keypress={resumeAudio} />
@@ -200,9 +221,10 @@
 		<Module label="Game clock">
 			<div class="numbers">
 				<Clock clock={game.game_clock} toggleKey="Space" siren={null}>
-					<Control slot="pre" key="h" handler={game.toggleSiren}>Horn</Control>
+					<Control slot="pre" key="h" handler={hornActivate} handlerRelease={hornDeativate}
+						>Horn</Control
+					>
 					<Siren {audio} bind:this={siren} {game} />
-					<Siren {audio} frequencies={[560, 1500]} bind:this={horn} />
 					<div>
 						<Control
 							handler={() => {

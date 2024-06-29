@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type GameInterface } from './types';
+	import { secondMs, type GameInterface } from './types';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import type { Game } from './backends/local';
@@ -15,10 +15,23 @@
 	let trigger: boolean | undefined = game?.siren;
 	let prevTrigger: boolean | undefined = !game?.siren;
 
+	let stopper: { (): void } | undefined = undefined;
+
 	$: (() => {
 		if ($game == null) return;
 		trigger = $game.siren;
-		if (trigger && !prevTrigger) beep(1000);
+		if (trigger && !prevTrigger) {
+			stopper = start();
+			setTimeout(() => {
+				if (typeof stopper == 'undefined') return;
+				stopper();
+				stopper = undefined;
+			}, 10 * secondMs);
+		}
+		if (!trigger && typeof stopper !== 'undefined') {
+			stopper();
+			stopper = undefined;
+		}
 		prevTrigger = trigger;
 	})();
 
@@ -37,8 +50,8 @@
 	}
 	$: connectAudio($audioStore);
 
-	export function beep(durationMs: number) {
-		if (audio === null || gainNode === null) return;
+	export function start() {
+		if (audio === null || gainNode === null) return () => {};
 		let oscillators: OscillatorNode[] = [];
 		for (const frequency of frequencies) {
 			let oscillator = audio.createOscillator();
@@ -49,16 +62,19 @@
 			oscillator.start();
 		}
 		gainNode.gain.setValueAtTime(0, audio.currentTime);
-		gainNode.gain.linearRampToValueAtTime(1, audio.currentTime + 0.01);
+		gainNode.gain.linearRampToValueAtTime(1, audio.currentTime + 0.001);
 		console.log('BEEP!');
 
-		setTimeout(() => {
+		return () => {
 			if (audio === null || gainNode === null) return;
-			gainNode.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 1);
+			gainNode.gain.linearRampToValueAtTime(0, audio.currentTime + 0.001);
 			for (const oscillator of oscillators) {
-				oscillator.stop(audio.currentTime + 1);
+				oscillator.stop(audio.currentTime + 0.001);
 			}
 			console.log('silence...');
-		}, durationMs);
+		};
+	}
+	export function beep(durationMs: number) {
+		setTimeout(start(), durationMs);
 	}
 </script>

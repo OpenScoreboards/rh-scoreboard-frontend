@@ -61,6 +61,6 @@
 		animation: blinker 1s ease-in-out infinite;
 	}
 	.inactive {
-		opacity: 0.1;
+		opacity: 0.07;
 	}
 </style>
