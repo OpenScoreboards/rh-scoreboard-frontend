@@ -12,6 +12,8 @@
 	import Match from './Match.svelte';
 	import Module from './Module.svelte';
 	import TowerButton from './TowerButton.svelte';
+	import '@fontsource/roboto';
+	import '@fontsource-variable/chivo-mono'; // Supports weights 100-900
 
 	export let config: Config = {
 		readonly: true,
@@ -60,7 +62,7 @@
 				borders: false
 			}
 		};
-		if (Object.hasOwn(defaults, preset)) {
+		if (defaults.hasOwnProperty(preset)) {
 			config = defaults[preset];
 		} else {
 			preset = 'readonly';
@@ -142,11 +144,6 @@
 <svelte:document class="scoreboard" on:click={resumeAudio} on:keypress={resumeAudio} />
 
 <main bind:this={main} class={`${config.borders ? 'borders' : ''}`}>
-	<style>
-		@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..700;1,100..700&display=swap');
-		/* @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap'); */
-		@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Lekton:ital,wght@0,400;0,700;1,400&display=swap');
-	</style>
 	<div class="home score">
 		<Module label="Home score">
 			{$game.home.label}

@@ -47,5 +47,9 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "dependencies": {
+    "@fontsource-variable/chivo-mono": "^5.0.21",
+    "@fontsource/roboto": "^5.0.13"
   }
 }
