@@ -103,6 +103,10 @@
 	{#if siren !== null}
 		<Siren bind:this={siren} />
 	{/if}
-	<Control key={toggleKey} handler={clockToggle}>{running ? 'Stop' : 'Start'}</Control>
+	<div>
+		<slot name="pre" />
+		<Control key={toggleKey} handler={clockToggle}>{running ? 'Stop' : 'Start'}</Control>
+		<slot name="post" />
+	</div>
 	<slot />
 </Controls>

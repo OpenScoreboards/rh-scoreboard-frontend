@@ -45,7 +45,7 @@
 	let focused = false;
 	function keydown(ev: KeyboardEvent) {
 		if (focused) return;
-		if(ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+		if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
 		for (const key of [ev.key, ev.code]) {
 			const handler = hotkeys.get(key);
 			if (typeof handler !== 'undefined') {
@@ -139,9 +139,8 @@
 	<div class="game_clock">
 		<div class="numbers">
 			<Clock clock={game.game_clock} toggleKey="Space" siren={null}>
-				<Siren {audio} bind:this={siren} {game} />
-				<Siren {audio} frequencies={[560, 1500]} bind:this={horn} />
 				<Control
+					slot="pre"
 					key="h"
 					handler={() => {
 						horn?.beep(500);
@@ -149,6 +148,8 @@
 				>
 					Horn
 				</Control>
+				<Siren {audio} bind:this={siren} {game} />
+				<Siren {audio} frequencies={[560, 1500]} bind:this={horn} />
 				<div>
 					<Control
 						handler={() => {
