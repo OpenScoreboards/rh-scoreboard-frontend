@@ -77,7 +77,11 @@
 				if (siren) siren.beep(sirenMs);
 				// console.table({ prev_ms, remaining_ms, prev_running });
 			}
-			if (persistAfterZeroMs !== null && remaining_ms == 0 && ms > $clock.last_state_change + persistAfterZeroMs) {
+			if (
+				persistAfterZeroMs !== null &&
+				remaining_ms == 0 &&
+				ms > $clock.last_state_change + persistAfterZeroMs
+			) {
 				disp = '';
 			}
 			prev_ms = remaining_ms;

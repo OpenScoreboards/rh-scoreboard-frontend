@@ -150,11 +150,17 @@ export class Team implements TeamInterface {
 	labelSet = (label: string) => {
 		this.api.post(`label/${this.team}/teamname/set`, { value: label });
 	};
+	scoreSet = (value: number) => {
+		this.api.post(`counter/${this.team}/score/set`, { value: `${value}` });
+	};
 	scoreIncrement = () => {
 		this.api.post(`counter/${this.team}/score/increment`);
 	};
 	scoreDecrement = () => {
 		this.api.post(`counter/${this.team}/score/decrement`);
+	};
+	foulsSet = (value: number) => {
+		this.api.post(`counter/${this.team}/teamfouls/set`, { value: `${value}` });
 	};
 	foulsIncrement = () => {
 		this.api.post(`counter/${this.team}/teamfouls/increment`);
@@ -216,6 +222,10 @@ export class Game implements GameInterface {
 		invalidate?: Invalidator<GameInterface> | undefined
 	) => {
 		return this.store.subscribe(run, invalidate);
+	};
+
+	reset = () => {
+		this.api.post('reset');
 	};
 
 	toggleSiren = () => {

@@ -17,7 +17,7 @@ export interface ClockInterface extends Readable<ClockInterface> {
 	state: 'Running' | 'Stopped';
 
 	start: (value?: number) => void;
-	stop: () => void;
+	stop: (value?: number) => void;
 	set: (value: number) => void;
 	adjust: (value: number) => void;
 }
@@ -31,9 +31,11 @@ export interface TeamInterface extends Readable<TeamInterface> {
 
 	labelSet: (label: string) => void;
 
+	scoreSet: (value: number) => void;
 	scoreIncrement: () => void;
 	scoreDecrement: () => void;
 
+	foulsSet: (value: number) => void;
 	foulsIncrement: () => void;
 	foulsDecrement: () => void;
 
@@ -52,6 +54,7 @@ export interface GameInterface extends Readable<GameInterface> {
 	match_title: string;
 	connection_state: connectionStateType;
 
+	reset: () => void;
 	toggleSiren: () => void;
 	periodIncrement: () => void;
 	periodDecrement: () => void;

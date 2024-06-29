@@ -40,6 +40,7 @@
 			game.setMatchTitle(value || '');
 		}}>⌨ Aa</Control
 	>
+	<Control handler={game.reset}>⚠ CLEAR ALL</Control>
 </Controls>
 
 <style>

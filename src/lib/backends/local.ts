@@ -25,12 +25,20 @@ class Team implements TeamInterface {
 		return this.store.subscribe(run, invalidate);
 	};
 
+	scoreSet = (value: number) => {
+		this.score = value;
+		this.store.set(this);
+	};
 	scoreIncrement = () => {
 		this.score++;
 		this.store.set(this);
 	};
 	scoreDecrement = () => {
 		this.score--;
+		this.store.set(this);
+	};
+	foulsSet = (value: number) => {
+		this.team_fouls = value;
 		this.store.set(this);
 	};
 	foulsIncrement = () => {
@@ -82,10 +90,13 @@ class Clock implements ClockInterface {
 		this.state = 'Running';
 		this.store.set(this);
 	};
-	stop = () => {
+	stop = (value?: number) => {
 		if (this.state == 'Stopped') return;
 		const now = Date.now();
-		this.last_time_remaining = Math.min(0, this.last_time_remaining - now + this.last_state_change);
+		this.last_time_remaining = Math.min(
+			0,
+			typeof value == 'undefined' ? this.last_time_remaining - now + this.last_state_change : value
+		);
 		this.last_state_change = now;
 		this.state = 'Stopped';
 		this.store.set(this);
@@ -132,6 +143,20 @@ export class Game implements GameInterface {
 		invalidate?: Invalidator<GameInterface> | undefined
 	) => {
 		return this.store.subscribe(run, invalidate);
+	};
+
+	reset = () => {
+		this.home.labelSet('Home');
+		this.away.labelSet('Away');
+		this.home.scoreSet(0);
+		this.away.scoreSet(0);
+		this.home.foulsSet(0);
+		this.away.foulsSet(0);
+		this.game_clock.stop(0);
+		this.shot_clock.stop(0);
+		this.stoppage_clock.stop(0);
+		this.period = 1;
+		this.store.set(this);
 	};
 
 	toggleSiren = () => {
