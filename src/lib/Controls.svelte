@@ -4,8 +4,6 @@
 	import type { Config } from './types';
 
 	const config: Writable<Config> = getContext('config');
-
-	$: console.table($config);
 </script>
 
 <div data-class="controls" data-readonly={`${$config.readonly}`}>
