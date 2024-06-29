@@ -1,8 +1,21 @@
-<div data-class="controls">
+<script lang="ts">
+	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
+	import type { Config } from './types';
+
+	const config: Writable<Config> = getContext('config');
+
+	$: console.table($config);
+</script>
+
+<div data-class="controls" data-readonly={`${$config.readonly}`}>
 	<slot />
 </div>
 
 <style>
+	div[data-readonly='true'] {
+		visibility: hidden;
+	}
 	div {
 		background: rgba(1, 1, 1, 0.7);
 		position: absolute;

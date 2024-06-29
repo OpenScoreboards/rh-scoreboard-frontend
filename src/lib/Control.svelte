@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
+	import type { Config } from './types';
 	import type { UIEventHandler } from 'svelte/elements';
 
 	export let key: string = '';
@@ -7,8 +9,10 @@
 	export let handler: UIEventHandler<HTMLButtonElement> | undefined;
 
 	const hotkeyAdd: CallableFunction = getContext('hotkeyAdd');
+	const config: Writable<Config> = getContext('config');
 
-	$: key && handler !== null && hotkeyAdd(key, handler);
+	$: (!$config.readonly) && key && handler !== null && hotkeyAdd(key, handler);
+
 </script>
 
 <button class="control" data-hotkey={key} on:click={handler}>

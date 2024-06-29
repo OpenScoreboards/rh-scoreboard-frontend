@@ -2,7 +2,7 @@
 	import { setContext, onMount } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import Clock from '$lib/Clock.svelte';
-	import { minuteMs, secondMs, type GameInterface } from './types';
+	import { minuteMs, secondMs, type Config, type GameInterface } from './types';
 	import ConnectionStatus from './ConnectionStatus.svelte';
 	import Controls from './Controls.svelte';
 	import Control from './Control.svelte';
@@ -11,17 +11,27 @@
 	import Siren from './Siren.svelte';
 	import Match from './Match.svelte';
 
+	export let config: Config = {
+		readonly: false,
+		mute: false
+	};
 	let game: GameInterface = new LocalGame();
 	let siren: Siren | null = null;
 	let horn: Siren | null = null;
 	let main: HTMLElement | null = null;
 
 	// context stores
+	const configStore: Writable<Config> = writable(config);
+	setContext('config', configStore);
+
+	$: configStore.set(config);
+
 	let audio: AudioContext | null = null;
 	const audioStore: Writable<AudioContext | null> = writable(null);
 	setContext('audio', audioStore);
 
 	function resumeAudio() {
+		if (config.mute) return;
 		if (audio?.state == 'suspended') {
 			audio.resume();
 			console.log('Audio resumed.');
@@ -30,8 +40,39 @@
 	}
 	onMount(() => {
 		const url = new URL(window.location.href);
-		const display = url.searchParams.get('display') || 'interactive';
-		if (main !== null) main.setAttribute('data-display', display);
+		let preset = url.search.replace(/^\?/, '') || 'readonly';
+		const defaults: Record<string, Config> = {
+			readonly: {
+				readonly: true,
+				mute: true
+			},
+			bench: {
+				readonly: false,
+				mute: false
+			},
+			tv: {
+				readonly: true,
+				mute: false
+			}
+		};
+		if (Object.hasOwn(defaults, preset)) {
+			config = defaults[preset];
+		} else {
+			preset = 'readonly';
+			config = defaults.readonly;
+		}
+		console.table(config);
+		const setAttr = (name: string, value: string | null) => {
+			if (main == null) return;
+			if (value == null) {
+				main.removeAttribute(name);
+			} else {
+				main.setAttribute(name, value);
+			}
+		};
+		setAttr('data-display', preset);
+		setAttr('data-readonly', config.readonly ? '' : null);
+		setAttr('data-mute', config.mute ? '' : null);
 		audio = new AudioContext();
 		game = new Game(`${location.protocol}//${location.hostname}:8000/`);
 		return () => {};
