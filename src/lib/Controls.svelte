@@ -4,11 +4,11 @@
 
 <style>
 	div {
-		background: rgba(1,1,1,0.7);
+		background: rgba(1, 1, 1, 0.7);
 		position: absolute;
 		display: flex;
 		bottom: 2cqh;
-		height: auto;
+		height: 96cqh;
 		width: 96cqw;
 		padding: 0;
 		margin: 0;

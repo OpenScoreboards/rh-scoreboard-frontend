@@ -28,6 +28,11 @@
 	:global(div[data-class='controls']:hover) button {
 		opacity: 0.5;
 	}
+	:global(main:not([data-display='interactive']))
+		:global(div[data-class='controls']:not(+ :hover))
+		button {
+		pointer-events: none;
+	}
 	kbd {
 		display: inline-block;
 		height: 1.2em;
