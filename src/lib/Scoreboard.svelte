@@ -288,6 +288,7 @@
 		height: 84cqh;
 	}
 	.fouls {
+margin-top: 6cqh;
 		container-type: size;
 		height: 48cqh;
 		color: yellow;
