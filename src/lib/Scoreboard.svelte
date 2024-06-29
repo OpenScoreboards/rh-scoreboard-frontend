@@ -14,8 +14,8 @@
 	import TowerButton from './TowerButton.svelte';
 
 	export let config: Config = {
-		readonly: false,
-		mute: false,
+		readonly: true,
+		mute: true,
 		borders: false
 	};
 	let game: GameInterface = new LocalGame();
