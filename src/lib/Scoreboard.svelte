@@ -139,15 +139,7 @@
 	<div class="game_clock">
 		<div class="numbers">
 			<Clock clock={game.game_clock} toggleKey="Space" siren={null}>
-				<Control
-					slot="pre"
-					key="h"
-					handler={() => {
-						horn?.beep(500);
-					}}
-				>
-					Horn
-				</Control>
+				<Control slot="pre" key="h" handler={game.toggleSiren}>Horn</Control>
 				<Siren {audio} bind:this={siren} {game} />
 				<Siren {audio} frequencies={[560, 1500]} bind:this={horn} />
 				<div>

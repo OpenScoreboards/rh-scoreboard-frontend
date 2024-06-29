@@ -37,6 +37,12 @@ export interface GameJSON {
 	siren: boolean;
 }
 
+function uuidv4() {
+	return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
+		(+c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))).toString(16)
+	);
+}
+
 export class BackendAPI extends Fetcher {
 	post(
 		path: string,
@@ -46,7 +52,7 @@ export class BackendAPI extends Fetcher {
 	): Promise<Response> {
 		params = {
 			ts: `${Date.now()}`,
-			uuid: crypto.randomUUID(),
+			uuid: isSecureContext ? crypto.randomUUID() : uuidv4(),
 			...(params || {})
 		};
 		return super.post(path, params, options, timeout);
@@ -192,7 +198,7 @@ export class Game implements GameInterface {
 	};
 
 	toggleSiren = () => {
-		this.api.post('toggle/siren/activate')
+		this.api.post(`toggle/siren/${this.siren ? 'deactivate' : 'activate'}`);
 	};
 
 	onerror = (ev: Event) => {
@@ -226,6 +232,7 @@ export class Game implements GameInterface {
 		this.siren = data.siren;
 
 		this.connection_state = 'good';
+		console.table(data);
 		this.store.set(this);
 	};
 }
