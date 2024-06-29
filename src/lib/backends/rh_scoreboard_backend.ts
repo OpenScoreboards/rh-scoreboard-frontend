@@ -37,6 +37,8 @@ export interface GameJSON {
 	siren: boolean;
 
 	period: number;
+
+	match_title: string;
 }
 
 function uuidv4() {
@@ -216,8 +218,7 @@ export class Game implements GameInterface {
 	};
 
 	setMatchTitle = (value: string) => {
-		this.match_title = value;
-		this.store.set(this);
+		this.api.post('label/matchtitle/set', { value });
 	};
 
 	onerror = (ev: Event) => {
@@ -250,6 +251,7 @@ export class Game implements GameInterface {
 
 		this.siren = data.siren;
 		this.period = data.period;
+		this.match_title = data.match_title;
 
 		this.connection_state = 'good';
 		console.table(data);

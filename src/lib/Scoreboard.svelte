@@ -83,7 +83,7 @@
 				<Control
 					handler={() => {
 						const value = prompt('Home team name?', $game.home.label);
-						if(value == null) return;
+						if (value == null) return;
 						game.home.labelSet(value);
 					}}>⌨ Aa</Control
 				>
@@ -125,7 +125,7 @@
 				<Control
 					handler={() => {
 						const value = prompt('Away team name?', $game.away.label);
-						if(value == null) return;
+						if (value == null) return;
 						game.away.labelSet(value);
 					}}>⌨ Aa</Control
 				>

@@ -1,9 +1,14 @@
-import type { Readable } from "svelte/store";
+import type { Readable } from 'svelte/store';
 
 export type connectionStateType = 'idle' | 'good' | 'warn' | 'fail';
 
 export const secondMs = 1000;
 export const minuteMs = 60000;
+
+export interface Config {
+	readonly: boolean;
+	mute: boolean;
+}
 
 export interface ClockInterface extends Readable<ClockInterface> {
 	last_state_change: number;
@@ -17,13 +22,13 @@ export interface ClockInterface extends Readable<ClockInterface> {
 }
 
 export interface TeamInterface extends Readable<TeamInterface> {
-    label: string;
+	label: string;
 	score: number;
 	team_fouls: number;
 	timeout_requested: boolean;
 	foul_warning: boolean;
 
-    labelSet: (label: string) => void;
+	labelSet: (label: string) => void;
 
 	scoreIncrement: () => void;
 	scoreDecrement: () => void;
@@ -40,10 +45,10 @@ export interface GameInterface extends Readable<GameInterface> {
 	away: TeamInterface;
 	game_clock: ClockInterface;
 	shot_clock: ClockInterface;
-    siren: boolean;
+	siren: boolean;
 	period: number;
 	match_title: string;
-    connection_state: connectionStateType;
+	connection_state: connectionStateType;
 
 	toggleSiren: () => void;
 	periodIncrement: () => void;
