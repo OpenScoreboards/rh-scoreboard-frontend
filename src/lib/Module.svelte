@@ -8,10 +8,10 @@
 	const config: Writable<Config> = getContext('config');
 </script>
 
+{#if label}
+	<span>{label}</span>
+{/if}
 <div data-borders={$config.borders ? 'true' : 'false'}>
-	{#if label}
-		<span>{label}</span>
-	{/if}
 	<slot />
 </div>
 
@@ -24,20 +24,22 @@
 		border: solid transparent 1vh;
 		border-radius: 2vh;
 		container-type: size;
+		overflow: hidden;
 	}
 	div[data-borders='true'] {
 		border-color: #111;
 	}
 	span {
 		position: absolute;
+		z-index: 1;
 		display: block;
-		top: -1.5vh;
+		top: -0.5vh;
 		color: #444;
 		font-size: 2vh;
 		line-height: 2vh;
 		padding-left: 2ex;
 	}
-	div[data-borders="false"] span {
+	div[data-borders='false'] span {
 		visibility: hidden;
 	}
 </style>
