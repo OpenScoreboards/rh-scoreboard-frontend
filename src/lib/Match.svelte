@@ -40,7 +40,12 @@
 			game.setMatchTitle(value || '');
 		}}>⌨ Aa</Control
 	>
-	<Control handler={game.reset}>⚠ RESET</Control>
+	<Control
+		handler={() => {
+			const value = prompt('Reset match?\n\nThe scoreboard will be cleared!\n\nType "yes" to confirm.', '');
+			if ((value || '').toLowerCase() == 'yes') game.reset();
+		}}>⚠ RESET</Control
+	>
 </Controls>
 
 <style>
