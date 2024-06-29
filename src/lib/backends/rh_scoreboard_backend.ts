@@ -109,13 +109,9 @@ export class Clock implements ClockInterface {
 		this.api.post(`clock/${this.name}/set`, { value: `${value}` });
 	};
 	adjust = (value: number) => {
-		if (this.state == 'Running') {
-			this.api.post(`clock/${this.name}/${value > 0 ? 'increment' : 'decrement'}`, {
-				value: `${Math.abs(value)}`
-			});
-		} else {
-			this.api.post(`clock/${this.name}/set`, { value: `${this.last_time_remaining + value}` });
-		}
+		this.api.post(`clock/${this.name}/${value > 0 ? 'increment' : 'decrement'}`, {
+			value: `${Math.abs(value)}`
+		});
 	};
 }
 
