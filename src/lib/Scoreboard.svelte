@@ -122,8 +122,14 @@
 		focused = document.activeElement?.tagName == 'input';
 	}
 
-	function hornActivate() {
+	function hornActivate(ev: UIEvent) {
 		if (!$game.siren) game.toggleSiren();
+		if (ev.which == 1) {
+			// mouse button 1 clicked
+			setTimeout(() => {
+				if ($game.siren) game.toggleSiren();
+			}, 0.5 * secondMs);
+		}
 	}
 	function hornDeativate() {
 		if ($game.siren) game.toggleSiren();
