@@ -6,12 +6,13 @@
 	export let label: string = '';
 
 	const config: Writable<Config> = getContext('config');
+	$: borders=$config.borders ? 'true' : 'false';
 </script>
 
 {#if label}
-	<span>{label}</span>
+	<span data-borders={borders}>{label}</span>
 {/if}
-<div data-borders={$config.borders ? 'true' : 'false'}>
+<div data-borders={borders}>
 	<slot />
 </div>
 
@@ -39,7 +40,7 @@
 		line-height: 2vh;
 		padding-left: 2ex;
 	}
-	div[data-borders='false'] span {
+	span[data-borders="false"] {
 		visibility: hidden;
 	}
 </style>
