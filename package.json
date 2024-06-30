@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@fontsource-variable/chivo-mono": "^5.0.21",
+    "@fontsource/lekton": "^5.0.14",
     "@fontsource/roboto": "^5.0.13"
   }
 }

@@ -13,7 +13,7 @@
 	import Module from './Module.svelte';
 	import TowerButton from './TowerButton.svelte';
 	import '@fontsource/roboto';
-	import '@fontsource-variable/chivo-mono'; // Supports weights 100-900
+	import '@fontsource/lekton';
 
 	export let config: Config = {
 		readonly: true,
