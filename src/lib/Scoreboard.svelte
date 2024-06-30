@@ -35,13 +35,22 @@
 	setContext('audio', audioStore);
 
 	function resumeAudio() {
-		if (config.mute) return;
+		if (config.mute) {
+			console.info('Audio muted.');
+			return;
+		}
 		if (audio?.state == 'suspended') {
-			audio.resume();
-			console.log('Audio resumed.');
-			audioStore.set(audio);
+			console.info('Audio resuming...');
+			try {
+				audio.resume();
+				console.info('Audio resumed.');
+				audioStore.set(audio);
+			} catch (err) {
+				console.error(`Audio resume failed: ${err}`);
+			}
 		}
 	}
+
 	onMount(() => {
 		const url = new URL(window.location.href);
 		let preset = url.search.replace(/^\?/, '') || 'readonly';
@@ -82,7 +91,30 @@
 		setAttr('data-mute', config.mute ? '' : null);
 		setAttr('data-borders', config.borders ? '' : null);
 		setAttr('data-interactive', config.readonly ? '' : null);
-		audio = new AudioContext();
+
+		audio = new (window.AudioContext || window.webkitAudioContext)();
+		const audioTimer = setTimeout(() => {
+			if (audio?.state == 'running') {
+				console.info('Audio resumed.');
+				clearInterval(audioTimer);
+				return;
+			}
+			if (config.mute) {
+				console.info('Audio muted.');
+				clearInterval(audioTimer);
+				return;
+			}
+			if (audio?.state == 'suspended') {
+				console.info('Audio resuming...');
+				try {
+					audio.resume();
+					console.info('Audio resumed.');
+					audioStore.set(audio);
+				} catch (err) {
+					console.error(`Audio resume failed: ${err}`);
+				}
+			}
+		}, 1 * secondMs);
 		game = new Game(`${location.protocol}//${location.hostname}:8000/`);
 		return () => {};
 	});
@@ -499,7 +531,7 @@
 		top: 52cqh;
 		height: 23cqh;
 		text-align: center;
-		color: blue;
+		color: #00aaff;
 	}
 	.shot_clock {
 		top: 76cqh;
