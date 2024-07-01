@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Control from './Control.svelte';
 	import Controls from './Controls.svelte';
+	import Label from './Label.svelte';
 	import type { GameInterface } from './types';
 
 	export let game: GameInterface;
@@ -8,14 +9,16 @@
 
 <!-- <div class="clock">{disp}</div> -->
 <div class="match">
-	<h1>
+	<Label>
 		{#if $game.match_title}
 			{$game.match_title}
 		{:else}
 			&nbsp;
 		{/if}
-	</h1>
-	<div class="period">
+	</Label>
+</div>
+<div class="period">
+	<Label>
 		{#if $game.period == 0}
 			&nbsp;
 		{:else if $game.period == 1}
@@ -27,7 +30,7 @@
 		{:else}
 			Overtime {`${$game.period - 3}`}
 		{/if}
-	</div>
+	</Label>
 </div>
 <Controls>
 	<div>
@@ -58,18 +61,15 @@
 		position: absolute;
 		width: 100cqw;
 		top: 0;
-		height: 98cqh;
-		font-size: 12cqh;
+		left: 0;
+		height: 50cqh;
 	}
 	.period {
-		vertical-align: middle;
-		width: 100%;
-		font-size: 20cqh;
-		letter-spacing: 0.25ex;
-		/* font-family: 'Lekton', monospace; */
-		font-optical-sizing: auto;
-		font-weight: 700;
-		font-style: normal;
-		padding-left: 0.1ex;
+		container-type: size;
+		position: absolute;
+		width: 100cqw;
+		top: 60cqh;
+		left: 0;
+		height: 40cqh;
 	}
 </style>

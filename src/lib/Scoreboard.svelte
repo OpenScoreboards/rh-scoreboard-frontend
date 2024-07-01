@@ -13,7 +13,10 @@
 	import Module from './Module.svelte';
 	import TowerButton from './TowerButton.svelte';
 	import '@fontsource/roboto';
-	import '@fontsource/lekton';
+	import '@fontsource-variable/noto-sans-jp'; // Supports weights 100-900
+	import Label from './Label.svelte';
+	import Number from './Number.svelte';
+	// import '@fontsource/lekton';
 
 	export let config: Config = {
 		readonly: true,
@@ -91,6 +94,7 @@
 		setAttr('data-mute', config.mute ? '' : null);
 		setAttr('data-borders', config.borders ? '' : null);
 		setAttr('data-interactive', config.readonly ? '' : null);
+		setAttr('data-userAgent', navigator.userAgent);
 
 		audio = new (window.AudioContext || window.webkitAudioContext)();
 		const audioTimer = setTimeout(() => {
@@ -178,8 +182,12 @@
 <main bind:this={main} class={`${config.borders ? 'borders' : ''}`}>
 	<div class="home score">
 		<Module label="Home score">
-			{$game.home.label}
-			<div class="numbers">{$game.home.score}</div>
+			<div class="team_label">
+				<Label>{$game.home.label}</Label>
+			</div>
+			<div class="team_score">
+				<Number maxChars={2}>{$game.home.score}</Number>
+			</div>
 			<Controls>
 				<div>
 					<Control key="w" handler={game.home.scoreIncrement}>+</Control>
@@ -197,9 +205,7 @@
 	</div>
 	<div class="home fouls">
 		<Module label="Home team fouls">
-			<div class="numbers">
-				{$game.home.team_fouls}
-			</div>
+			<Number maxChars={2}>{$game.home.team_fouls}</Number>
 			<Controls>
 				<Control key="a" handler={game.home.foulsDecrement}>-</Control>
 				<Control key="d" handler={game.home.foulsIncrement}>+</Control>
@@ -216,8 +222,12 @@
 	</div>
 	<div class="away score">
 		<Module label="Away score">
-			{$game.away.label}
-			<div class="numbers">{$game.away.score}</div>
+			<div class="team_label">
+				<Label>{$game.away.label}</Label>
+			</div>
+			<div class="team_score">
+				<Number maxChars={2}>{$game.away.score}</Number>
+			</div>
 			<Controls>
 				<div>
 					<Control key="ArrowUp" desc="↑" handler={game.away.scoreIncrement}>+</Control>
@@ -235,9 +245,7 @@
 	</div>
 	<div class="away fouls">
 		<Module label="Away team fouls">
-			<div class="numbers">
-				{$game.away.team_fouls}
-			</div>
+			<Number maxChars={2}>{$game.away.team_fouls}</Number>
 			<Controls>
 				<Control key="ArrowLeft" desc="←" handler={game.away.foulsDecrement}>-</Control>
 				<Control key="ArrowRight" desc="→" handler={game.away.foulsIncrement}>+</Control>
@@ -254,7 +262,7 @@
 	</div>
 	<div class="match game_clock">
 		<Module label="Game clock">
-			<div class="numbers">
+			<Number maxChars={5}>
 				<Clock clock={game.game_clock} toggleKey="Space" siren={null}>
 					<Control slot="pre" key="h" handler={hornActivate} handlerRelease={hornDeativate}
 						>Horn</Control
@@ -341,7 +349,7 @@
 						</Control>
 					</div>
 				</Clock>
-			</div>
+			</Number>
 		</Module>
 	</div>
 
@@ -365,7 +373,7 @@
 	</div>
 	<div class="match stoppage_clock">
 		<Module label="Stoppage clock">
-			<div class="numbers">
+			<Number maxChars={5}>
 				<Clock clock={game.stoppage_clock} persistAfterZeroMs={10 * secondMs} siren={null}>
 					<div>
 						<Control
@@ -427,12 +435,12 @@
 						</Control>
 					</div>
 				</Clock>
-			</div>
+			</Number>
 		</Module>
 	</div>
 	<div class="match shot_clock">
 		<Module label="Shot clock">
-			<div class="numbers">
+			<Number maxChars={3}>
 				<Clock clock={game.shot_clock} toggleKey=",">
 					<Control
 						key="."
@@ -443,7 +451,7 @@
 						45s
 					</Control>
 				</Clock>
-			</div>
+			</Number>
 		</Module>
 	</div>
 	<div class="status">
@@ -475,15 +483,15 @@
 	}
 	.match {
 		position: absolute;
-		left: 27cqw;
-		width: 46cqw;
+		left: 29cqw;
+		width: 42cqw;
 		text-align: center;
 		container-type: size;
 	}
 	.home,
 	.away {
 		position: absolute;
-		width: 26cqw;
+		width: 28cqw;
 		text-align: center;
 		font-size: min(8cqh, 3cqw);
 		border: solid transparent 1cqh;
@@ -499,6 +507,14 @@
 	.score {
 		top: 1cqh;
 		height: 38cqh;
+	}
+	.score .team_label {
+		height: 15cqh;
+		container-type: size;
+	}
+	.score .team_score {
+		height: 75cqh;
+		container-type: size;
 	}
 	.fouls {
 		top: 40cqh;
@@ -538,20 +554,5 @@
 		height: 23cqh;
 		text-align: center;
 		color: red;
-	}
-	.numbers {
-		vertical-align: middle;
-		width: 100%;
-		font-size: 98cqh;
-		line-height: 106cqh;
-		letter-spacing: 0.25ex;
-		font-family: 'Lekton', monospace;
-		font-optical-sizing: auto;
-		font-weight: 700;
-		font-style: normal;
-		padding-left: 0.1ex;
-	}
-	.game_clock .numbers {
-		font-size: min(98cqh, 30cqw);
 	}
 </style>
