@@ -37,7 +37,7 @@
 		border: solid 1px white;
 		border-radius: 4px;
 		cursor: pointer;
-		font-size: 4vh;
+		font-size: min(3.8vh, 2vw);
 		margin: 0.3ex;
 		transition: opacity 0.2s;
 		opacity: 0.1;
