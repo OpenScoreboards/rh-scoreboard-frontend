@@ -9,6 +9,7 @@ export interface Config {
 	readonly: boolean;
 	mute: boolean;
 	borders: boolean;
+	cursor: boolean;
 }
 
 export interface ClockInterface extends Readable<ClockInterface> {

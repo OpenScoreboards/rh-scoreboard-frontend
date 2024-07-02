@@ -21,7 +21,8 @@
 	export let config: Config = {
 		readonly: true,
 		mute: true,
-		borders: false
+		borders: false,
+		cursor: false
 	};
 	let game: GameInterface = new LocalGame();
 	let siren: Siren | null = null;
@@ -61,17 +62,20 @@
 			readonly: {
 				readonly: true,
 				mute: true,
-				borders: false
+				borders: false,
+				cursor: true
 			},
 			bench: {
 				readonly: false,
 				mute: false,
-				borders: true
+				borders: true,
+				cursor: true
 			},
 			tv: {
 				readonly: true,
 				mute: false,
-				borders: false
+				borders: false,
+				cursor: false
 			}
 		};
 		if (defaults.hasOwnProperty(preset)) {
@@ -94,6 +98,7 @@
 		setAttr('data-mute', config.mute ? '' : null);
 		setAttr('data-borders', config.borders ? '' : null);
 		setAttr('data-interactive', config.readonly ? '' : null);
+		setAttr('data-cursor', config.cursor ? '' : null);
 		setAttr('data-userAgent', navigator.userAgent);
 
 		audio = new (window.AudioContext || window.webkitAudioContext)();
@@ -469,6 +474,9 @@
 		container-type: size;
 		font-family: 'Roboto', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
 			'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	}
+	main:not(data-cursor) {
+		cursor: none !important;
 	}
 	.status {
 		display: inline;
