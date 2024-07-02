@@ -10,7 +10,6 @@
 	export let handlerRelease: UIEventHandler<HTMLButtonElement> | undefined = undefined;
 
 	const hotkeyAdd: CallableFunction = getContext('hotkeyAdd');
-	const config: Writable<Config> = getContext('config');
 
 	$: key && handler !== null && hotkeyAdd(key, handler, handlerRelease);
 </script>

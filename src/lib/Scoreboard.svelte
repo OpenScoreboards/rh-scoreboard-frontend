@@ -128,9 +128,10 @@
 		return () => {};
 	});
 
-	const hotkeys: Map<string | number, { (): void }> = new Map();
-	const hotkeysRelease: Map<string | number, { (): void }> = new Map();
-	function hotkeyAdd(key: string | number, handler: { (): void }, handlerRelease?: { (): void }) {
+	const hotkeys: Map<string, { (): void }> = new Map();
+	const hotkeysRelease: Map<string, { (): void }> = new Map();
+	function hotkeyAdd(key: string, handler: { (): void }, handlerRelease?: { (): void }) {
+		key = key.toLowerCase();
 		hotkeys.set(key, handler);
 		if (typeof handlerRelease !== 'undefined') {
 			hotkeysRelease.set(key, handlerRelease);
@@ -142,7 +143,7 @@
 	function keydown(ev: KeyboardEvent) {
 		if (focused || config.readonly) return;
 		if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
-		for (const key of [ev.key, ev.code]) {
+		for (const key of [ev.key.toLowerCase(), ev.code.toLowerCase()]) {
 			const handler = hotkeys.get(key);
 			if (typeof handler !== 'undefined') {
 				ev.preventDefault();
@@ -153,7 +154,7 @@
 	function keyup(ev: KeyboardEvent) {
 		if (focused || config.readonly) return;
 		if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
-		for (const key of [ev.key, ev.code]) {
+		for (const key of [ev.key.toLowerCase(), ev.code.toLowerCase()]) {
 			const handler = hotkeysRelease.get(key);
 			if (typeof handler !== 'undefined') {
 				ev.preventDefault();
