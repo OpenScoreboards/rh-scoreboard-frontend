@@ -19,6 +19,7 @@
 	// import '@fontsource/lekton';
 
 	export let config: Config = {
+		layout: 'full',
 		readonly: true,
 		mute: true,
 		borders: false,
@@ -60,22 +61,32 @@
 		let preset = url.search.replace(/^\?/, '') || 'readonly';
 		const defaults: Record<string, Config> = {
 			readonly: {
+				layout: 'full',
 				readonly: true,
 				mute: true,
 				borders: false,
 				cursor: true
 			},
 			bench: {
+				layout: 'full',
 				readonly: false,
 				mute: false,
 				borders: true,
 				cursor: true
 			},
 			tv: {
+				layout: 'full',
 				readonly: true,
 				mute: false,
 				borders: false,
 				cursor: false
+			},
+			tower: {
+				layout: 'tower',
+				readonly: true,
+				mute: true,
+				borders: false,
+				cursor: true
 			}
 		};
 		if (defaults.hasOwnProperty(preset)) {
@@ -94,6 +105,7 @@
 			}
 		};
 		setAttr('data-display', preset);
+		setAttr('data-layout', config.layout);
 		setAttr('data-readonly', config.readonly ? '' : null);
 		setAttr('data-mute', config.mute ? '' : null);
 		setAttr('data-borders', config.borders ? '' : null);
@@ -465,7 +477,7 @@
 	</div>
 </main>
 
-<style>
+<style lang="less">
 	main {
 		position: relative;
 		background-color: black;
@@ -476,7 +488,7 @@
 		font-family: 'Roboto', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
 			'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	}
-	main:not(data-cursor) {
+	main:not([data-cursor]) {
 		cursor: none !important;
 	}
 	.status {
@@ -563,5 +575,50 @@
 		height: 23cqh;
 		text-align: center;
 		color: red;
+	}
+	main:is([data-layout='tower']) {
+		.home, .away {
+			width: 15cqw;
+		}
+		.match {
+			width: 70cqw;
+			left: 15cqw;
+		}
+		.home {
+			left: 0;
+		}
+		.away {
+			right: 0;
+		}
+		.match_info {
+			display: none;
+		}
+		.score {
+			top: 0;
+			height: 10cqh;
+		}
+		.fouls {
+			top: 10cqh;
+			height: 10cqh;
+		}
+		.tower {
+			top: 20cqh;
+			height: 80cqh;
+		}
+		.tower div {
+			display: block;
+		}
+		.game_clock {
+			top: 00cqh;
+			height: 10cqh;
+		}
+		.shot_clock {
+			top: 10cqh;
+			height: 80cqh;
+		}
+		.stoppage_clock {
+			top: 90cqh;
+			height: 10cqh;
+		}
 	}
 </style>

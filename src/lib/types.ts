@@ -6,6 +6,7 @@ export const secondMs = 1000;
 export const minuteMs = 60000;
 
 export interface Config {
+	layout: "full" | "tower" | "shotclock";
 	readonly: boolean;
 	mute: boolean;
 	borders: boolean;

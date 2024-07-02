@@ -46,6 +46,12 @@
         background: gray;
         container-type: size;
 	}
+	:global(main:is([data-layout='tower'])) button {
+		width: 99cqw;
+		height: 99cqw;
+		font-size: 99cqw;
+		margin: 4cqh 0;
+	}
 	.fouls {
 		background: red;
 	}
