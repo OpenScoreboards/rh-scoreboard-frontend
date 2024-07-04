@@ -459,7 +459,7 @@
 	<div class="match shot_clock">
 		<Module label="Shot clock">
 			<Number maxChars={3}>
-				<Clock clock={game.shot_clock} toggleKey=",">
+				<Clock clock={game.shot_clock} toggleKey="," siren={null}>
 					<Control
 						key="."
 						handler={() => {
